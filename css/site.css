@@ -121,7 +121,7 @@ main,.footer{position:relative;z-index:1}
   mask-image:linear-gradient(90deg,transparent 0,#000 34%),linear-gradient(0deg,transparent 0,#000 26%);mask-composite:intersect;
   transform:translate3d(0,calc(var(--out,0) * -70px),0) scale(calc(1 + var(--out,0) * .08));transform-origin:70% 30%;opacity:calc(1 - var(--out,0) * .8)}
 .hero-robot-img{position:absolute;inset:-4% -2%;transform:translate3d(calc(var(--hx,0) * -18px),calc(var(--hy,0) * -12px),0);transition:transform 1.2s var(--e-out)}
-.hero-robot-img img{width:100%;height:100%;object-fit:cover;object-position:50% 24%;filter:contrast(1.05) saturate(1.04)}
+.hero-robot-img img{width:100%;height:100%;object-fit:cover;object-position:50% 6%;filter:contrast(1.05) saturate(1.04)}
 .motion .hero-robot-img img{animation:emerge 2.4s var(--e-out) both,float 11s ease-in-out 2.4s infinite}
 @keyframes emerge{from{opacity:0;filter:brightness(.1) contrast(1.2);scale:1.08}to{opacity:1;filter:contrast(1.05) saturate(1.04);scale:1}}
 @keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
@@ -468,6 +468,8 @@ main,.footer{position:relative;z-index:1}
 .signature .sig-name{font-size:clamp(54px,9vw,170px)}
 .sig-robot{margin-bottom:-14%}
 .scene-robot{justify-self:center;align-self:center;width:100%;max-width:660px}
+.scene-robot.tall{max-width:470px}
+.scene-robot.tall img{-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,#000 72%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,#000 72%,transparent);mask-composite:intersect}
 .footer{padding:40px 0 60px;border-top:1px solid var(--line);font-size:13px;line-height:1.7;color:var(--muted)}
 
 /* ---------- responsivo ---------- */
@@ -484,14 +486,15 @@ main,.footer{position:relative;z-index:1}
   .lab-open,.signature{grid-template-columns:minmax(0,1fr)}
   .lab-robot{order:-1;width:min(62vw,280px);margin:0 0 -8% auto}
   .scene .scene-robot{order:-1;max-width:520px}
+  .scene .scene-robot.tall{max-width:340px}
   .sig-robot{order:-1;width:min(64vw,300px);margin:0 0 -10% auto}
   .nav{display:none}
   .menu-btn{display:inline-flex}
   .hero{justify-content:flex-end;padding:0 0 110px}
   .hero-copy{max-width:none}
-  .hero-robot{bottom:auto;height:66svh;width:100%;
+  .hero-robot{top:44px;bottom:auto;height:66svh;width:100%;
     -webkit-mask-image:linear-gradient(180deg,#000 46%,transparent 96%);mask-image:linear-gradient(180deg,#000 46%,transparent 96%);-webkit-mask-composite:source-over;mask-composite:add}
-  .hero-robot-img img{object-position:62% 20%}
+  .hero-robot-img img{object-position:62% 0%}
   .hero-grid::before{content:"";position:absolute;z-index:-1;inset:-90px 0 -40px;pointer-events:none;background:linear-gradient(180deg,rgba(11,9,7,0),rgba(11,9,7,.72) 34%,rgba(11,9,7,.94) 70%)}
   .hero-title{font-size:clamp(52px,17vw,104px)}
   .hud-inner{scale:.72}

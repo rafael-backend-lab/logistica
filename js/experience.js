@@ -160,7 +160,7 @@ if(hasGsap&&!reduce){
   $$('.scene .frame-clip').forEach(function(c){
     var img=c.querySelector('img');
     gsap.fromTo(c,{yPercent:4},{yPercent:-4,ease:'none',scrollTrigger:{trigger:c,start:'top bottom',end:'bottom top',scrub:true}});
-    if(img)gsap.fromTo(img,{scale:1.16},{scale:1.04,ease:'none',scrollTrigger:{trigger:c,start:'top bottom',end:'bottom top',scrub:true}});
+    if(img)gsap.fromTo(c.querySelectorAll('img,.rl-box'),{scale:1.16},{scale:1.04,ease:'none',scrollTrigger:{trigger:c,start:'top bottom',end:'bottom top',scrub:true}});
   });
   $$('.scene .ghost').forEach(function(g){
     gsap.fromTo(g,{yPercent:12},{yPercent:-12,ease:'none',scrollTrigger:{trigger:g.parentNode,start:'top bottom',end:'bottom top',scrub:true}});

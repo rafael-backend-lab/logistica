@@ -29,6 +29,8 @@ function add(el,kid){
   el.appendChild(typeof kid==='string'||typeof kid==='number'?document.createTextNode(String(kid)):kid);
 }
 function clear(el){while(el.firstChild)el.removeChild(el.firstChild);}
+/* avisa os robôs da página sobre o andamento das demonstrações */
+function signal(demo,type,data){try{document.dispatchEvent(new CustomEvent('demo:signal',{detail:{demo:demo,type:type,data:data}}));}catch(e){}}
 function wait(ms){return new Promise(function(r){setTimeout(r,reduce?0:ms);});}
 function clamp(v,a,b){return v<a?a:v>b?b:v;}
 
@@ -173,12 +175,12 @@ function mountCompare(root){
   }
   function runAssisted(){
     var s=state.assisted; if(busy||count(s))return; busy=1; s.actions++;
-    runBtn.disabled=true;
+    runBtn.disabled=true; signal('compare','start');
     var seq=Promise.resolve();
     FAT.forEach(function(f,i){
-      seq=seq.then(function(){tiles[i].classList.add('scan');return wait(170);}).then(function(){s.done[i]=check(f);paint();tiles[i].classList.add('scan');return wait(60);}).then(function(){tiles[i].classList.remove('scan');});
+      seq=seq.then(function(){tiles[i].classList.add('scan');signal('compare','step',i);return wait(170);}).then(function(){s.done[i]=check(f);paint();tiles[i].classList.add('scan');return wait(60);}).then(function(){tiles[i].classList.remove('scan');});
     });
-    seq.then(function(){busy=0;runBtn.disabled=false;paint();});
+    seq.then(function(){busy=0;runBtn.disabled=false;paint();signal('compare','done',{bad:FAT.filter(function(f,i){return s.done[i]&&!s.done[i].ok;}).length});});
   }
   function review(i){var s=state.assisted; if(s.reviewed[i])return; s.reviewed[i]=true; s.actions++; paint();}
   function reset(){if(busy)return; state[mode]={done:{},actions:0,finished:false,reviewed:{}}; paint();}
@@ -228,7 +230,7 @@ function mountLab(root){
     ]);
   }
   function stale(){renderDocs(); if(ran){stamp.textContent='Dados alterados · execute a conferência de novo'; root.classList.add('is-stale');}}
-  function setStep(i){$$('li',steps).forEach(function(li,k){li.className=k<i?'done':k===i?'on':'';});}
+  function setStep(i){$$('li',steps).forEach(function(li,k){li.className=k<i?'done':k===i?'on':'';}); if(i>=0)signal('lab','step',i);}
 
   function run(){
     if(running)return; running=true; ran=true; runBtn.disabled=true; root.classList.remove('is-stale'); stamp.textContent='';
@@ -266,7 +268,7 @@ function mountLab(root){
         bad.length?h('ul',{class:'lr-acts'},bad.map(function(b){return h('li',null,h('b',null,b.msg),' ',b.act||'');})):h('p',{class:'lr-ok'},'Documentos, planilha e registro estão coerentes.'),
         h('p',{class:'note'},'Providências sugeridas para conferência humana. Dados fictícios.')
       ]);
-      root.classList.remove('running'); root.classList.add('done'); running=false; runBtn.disabled=false;
+      root.classList.remove('running'); root.classList.add('done'); running=false; runBtn.disabled=false; signal('lab','done',{bad:bad.length});
       $$('.ldoc',docsCol).forEach(function(c){c.classList.remove('id','ext');});
     });
   }
@@ -379,6 +381,7 @@ function mountRkos(root){
     renderDocs();
     var res=answer(i,DATA), ids=[];
     res.used.forEach(function(p){if(ids.indexOf(p.doc.id)<0)ids.push(p.doc.id);});
+    signal('rkos','start',{n:ids.length});
     root.classList.add('asking'); ans.classList.remove('show'); viewer.hidden=true; clear(srcs);
     meta.textContent='Procurando nos '+res.scanned+' trechos indexados…'; ansText.textContent='';
     layout(null);
@@ -393,7 +396,7 @@ function mountRkos(root){
       meta.textContent=res.matched+' de '+res.scanned+' trechos relacionados · '+res.used.length+' '+plural(res.used.length,'usado','usados')+' na resposta';
       ansText.textContent=res.text;
       res.used.forEach(function(p){srcs.appendChild(h('button',{type:'button',class:'rk-src','aria-pressed':'false',on:{click:function(e){$$('.rk-src',srcs).forEach(function(b){b.setAttribute('aria-pressed','false');});e.currentTarget.setAttribute('aria-pressed','true');showPassage(p);}}},h('b',null,p.doc.title),h('span',null,p.ref+' · ver trecho')));});
-      busy=false;
+      busy=false; signal('rkos','done',{n:ids.length});
     });
   }
   renderDocs(); layout(null);
@@ -483,7 +486,7 @@ function mountAtlas(root){
     swA.setAttribute('aria-checked',String(P.aditivoAssinado)); swF.setAttribute('aria-checked',String(P.fiscal));
   }
   function addLog(t){log.push(t); logEl.appendChild(h('li',null,h('span',null,String(log.length).padStart(2,'0')),t)); logEl.scrollTop=logEl.scrollHeight;}
-  function setStage(i){stage=i; $$('li',stageList).forEach(function(li,k){li.className=k<i?'done':k===i?'on':'';}); root.setAttribute('data-stage',String(i));}
+  function setStage(i){stage=i; $$('li',stageList).forEach(function(li,k){li.className=k<i?'done':k===i?'on':'';}); root.setAttribute('data-stage',String(i)); if(i>=0&&i<3)signal('atlas','step',i);}
   function setStatus(t,cls){status.textContent=t; status.className='at-status'+(cls?' '+cls:'');}
   function edited(){fillSheet(); if(stage>=0&&!running){setStatus('DADOS ALTERADOS · REANALISAR','warn');caption.textContent='Os dados mudaram. Inicie a análise de novo para atualizar o resultado.';}}
   function hl(ids,cls){Object.keys(F).forEach(function(k){F[k].classList.toggle(cls,ids.indexOf(k)>=0);});}
@@ -504,7 +507,7 @@ function mountAtlas(root){
       if(!a.pend.length)pendBox.appendChild(h('li',{class:'sev-ok'},h('b',null,'OK'),'Nenhuma pendência nos dados informados.'));
       hl(ids,'flag'); addLog(a.pend.length?a.pend.length+' '+plural(a.pend.length,'pendência identificada','pendências identificadas')+'.':'Nenhuma pendência.');
       return wait(900);});
-    seq=seq.then(function(){setStage(3);root.classList.add('s3');$('.at-reco p',sheet).textContent=a.reco;$('.at-reco span',sheet).textContent='Fundamentada nos campos destacados da folha de análise.';caption.textContent='Recomendação: o ATLAS propõe a providência; a decisão continua com a pessoa responsável.';addLog('Providência sugerida: '+a.reco);return wait(800);});
+    seq=seq.then(function(){setStage(3);root.classList.add('s3');signal('atlas','done',{pend:a.pend.length});$('.at-reco p',sheet).textContent=a.reco;$('.at-reco span',sheet).textContent='Fundamentada nos campos destacados da folha de análise.';caption.textContent='Recomendação: o ATLAS propõe a providência; a decisão continua com a pessoa responsável.';addLog('Providência sugerida: '+a.reco);return wait(800);});
     seq=seq.then(function(){setStage(4);setStatus('AGUARDANDO DECISÃO HUMANA','wait');decide.hidden=false;clear($('.at-out',decide));caption.textContent='Validação humana: escolha como seguir.';running=false;lock(false);
       if(reviewFocus){hl(reviewFocus,'rev');}});
   }
@@ -514,7 +517,7 @@ function mountAtlas(root){
     var out=$('.at-out',decide); clear(out); $('.at-reasons',decide).hidden=true;
     $$('.at-dbtns button',decide).forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-d')===d));});
     if(d==='aprovar'){
-      root.classList.add('approved'); setStatus('ENCAMINHADO','ok');
+      root.classList.add('approved'); setStatus('ENCAMINHADO','ok'); signal('atlas','approve');
       $('.at-stamp b',sheet).textContent='ENCAMINHADO'; $('.at-stamp small',sheet).textContent='DECISÃO DA PESSOA RESPONSÁVEL';
       addLog('Encaminhamento aprovado pela pessoa responsável.');
       add(out,h('div',{class:'at-doc'},h('span',{class:'k'},'MINUTA DE DESPACHO · DEMONSTRATIVA'),

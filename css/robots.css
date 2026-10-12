@@ -1,0 +1,43 @@
+/* ==========================================================================
+   Robôs vivos · camadas de luz sobre as imagens (olhos, leitura óptica, conexões)
+   A fotografia nunca é deformada; tudo aqui é luz sobreposta.
+   ========================================================================== */
+.rl-box{position:absolute;inset:0;z-index:1;pointer-events:none}
+.rl{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2}
+.rl-box .rl{inset:auto}
+.robot-cut .rl{-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent);mask-image:linear-gradient(180deg,#000 72%,transparent)}
+.robot-cut.scene-robot.tall .rl{-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,#000 72%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,#000 72%,transparent);mask-composite:intersect}
+.motion .hero-robot-img .rl-box{animation:rl-emerge 2.4s var(--e-out) both,float 11s ease-in-out 2.4s infinite}
+.frame-clip .rl-box{transform:scale(1.12);transform-origin:50% 40%}
+
+/* animações só rodam com o robô na tela */
+.rl *{animation-play-state:paused}
+.rl.rl-on *{animation-play-state:running}
+
+.rl .halo,.rl .lens,.rl .lens2,.rl .core,.rl .flash,.rl .done,.rl .mech,.rl .ripple{transform-box:fill-box;transform-origin:center}
+.rl .halo{animation:rl-breath 5.2s ease-in-out infinite}
+.rl .core{animation:rl-proc 3.1s linear infinite}
+.rl .lens{animation:rl-spin 11s linear infinite}
+.rl .lens2{animation:rl-spin 23s linear infinite reverse}
+.rl .flash{opacity:0;animation:rl-flash 9.4s ease-out infinite}
+.rl .done{opacity:0}
+.rl .done.go{animation:rl-done 1.15s cubic-bezier(.2,.7,.3,1)}
+.rl .mech{animation:rl-mech 4.4s ease-in-out infinite}
+.rl .ripple{opacity:0;animation:rl-ripple 2.8s cubic-bezier(.2,.6,.3,1) infinite}
+
+@keyframes rl-emerge{from{opacity:0;scale:1.08}to{opacity:1;scale:1}}
+@keyframes rl-spin{to{transform:rotate(360deg)}}
+/* respiração irregular: processamento, não pisca-pisca */
+@keyframes rl-breath{
+  0%{opacity:.52;transform:scale(.92)}18%{opacity:.8;transform:scale(1.02)}31%{opacity:.6;transform:scale(.96)}
+  47%{opacity:.92;transform:scale(1.06)}63%{opacity:.64;transform:scale(.97)}80%{opacity:.84;transform:scale(1.03)}100%{opacity:.52;transform:scale(.92)}}
+@keyframes rl-proc{0%{opacity:.82}6%{opacity:1}8%{opacity:.7}11%{opacity:1}39%{opacity:.9}40%{opacity:1}68%{opacity:.8}72%{opacity:.95}100%{opacity:.82}}
+@keyframes rl-flash{0%,91%{opacity:0;transform:scale(.55)}92.5%{opacity:.9;transform:scale(.7)}100%{opacity:0;transform:scale(2.6)}}
+@keyframes rl-done{0%{opacity:.95;transform:scale(.45)}100%{opacity:0;transform:scale(3.4)}}
+@keyframes rl-mech{0%,100%{opacity:.18}45%{opacity:.62}55%{opacity:.5}}
+@keyframes rl-ripple{0%{opacity:.75;transform:scale(.3)}100%{opacity:0;transform:scale(2.2)}}
+
+@media (prefers-reduced-motion:reduce){
+  .rl .flash,.rl .done,.rl .ripple{display:none}
+  .motion .hero-robot-img .rl-box{animation:none}
+}

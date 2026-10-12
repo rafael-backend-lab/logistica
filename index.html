@@ -210,9 +210,6 @@ span.dw{display:inline-block!important;white-space:pre!important;vertical-align:
 @keyframes ringSpin{to{--a:360deg}}
 .name{margin:42px 0 0;font:900 clamp(56px,9vw,132px)/.86 var(--f-display);text-transform:uppercase;letter-spacing:-.005em;color:var(--paper);text-wrap:balance}
 .role{margin:18px 0 0;font:500 clamp(12px,1.2vw,14px)/1.6 var(--f-mono);letter-spacing:.16em;color:var(--ember-hot);max-width:60em;text-wrap:balance}
-@media (max-width:640px){.gh{padding:16px 18px;max-width:100%}.gh-url{font-size:15px;white-space:nowrap}}
-@media (max-width:400px){.gh{padding:14px 14px}.gh-url{font-size:13px;letter-spacing:-.01em}}
-@media (max-width:330px){.gh-url{white-space:normal;overflow-wrap:anywhere}}
 .bio{display:grid;gap:22px;max-width:44em;margin-top:44px;text-align:left}
 .bio>p{margin:0;font-size:clamp(17px,1.5vw,20px);line-height:1.7;color:#ddd2c2}
 .tools-block{padding:22px 24px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,#1c1612,#100d0b)}
@@ -228,6 +225,10 @@ span.dw{display:inline-block!important;white-space:pre!important;vertical-align:
 .gh-k{font:500 12px/1 var(--f-mono);letter-spacing:.16em;color:var(--muted)}
 .gh-url{font:700 clamp(17px,1.8vw,22px)/1.2 var(--f-mono);color:var(--paper)}
 .gh-url i{font-style:normal;color:var(--ember)}
+/* ajustes do botão GitHub em telas pequenas: vêm depois das regras gerais para não serem sobrescritos */
+@media (max-width:640px){.gh{max-width:100%;padding:16px 18px}.gh-url{font-size:15px;white-space:nowrap}}
+@media (max-width:400px){.gh{padding:14px 14px}.gh-url{font-size:13px;letter-spacing:-.01em}}
+@media (max-width:300px){.gh-url{font-size:12px}}
 .howto{margin-top:64px;width:100%;text-align:left}
 .profile2>.closing{text-align:left;align-self:stretch;max-width:30em;margin-inline:auto}
 
@@ -248,8 +249,8 @@ span.dw{display:inline-block!important;white-space:pre!important;vertical-align:
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}
 .side{position:relative;isolation:isolate;min-width:0;padding:clamp(22px,2.6vw,32px);border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,#1c1612,#100d0b);transition:opacity .5s,transform .5s var(--ease),border-color .5s,filter .5s}
 .side.after{background:linear-gradient(160deg,#2a1810,#110c0a)}
-.js .duo .side:not(.is-active){opacity:.42;transform:scale(.975);filter:saturate(.4)}
-.js .duo .side.is-active{border-color:rgba(255,122,26,.55);box-shadow:0 0 50px rgba(255,90,20,.08)}
+.js .duo .side:not(.is-active){background:linear-gradient(160deg,#1a1512,#0f0c0a)}
+.js .duo .side.is-active{border-color:rgba(255,122,26,.7);background:linear-gradient(160deg,rgba(255,122,26,.16),rgba(255,122,26,.04) 55%),linear-gradient(160deg,#21170f,#110c0a);box-shadow:inset 0 0 0 1px rgba(255,122,26,.25),0 0 50px rgba(255,90,20,.1)}
 .side .state{font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--muted)}
 .side.after .state{color:var(--ember-hot)}
 .side h3{margin:12px 0 18px;font:800 clamp(28px,3vw,40px)/1 var(--f-display);text-transform:uppercase;color:var(--paper)}

@@ -37,6 +37,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/demos.css">
 </head>
 <body>
 <a class="skip-link" href="#inicio">Ir para o conteúdo</a>
@@ -48,7 +49,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
   <a class="brand" href="#inicio">R / LOGÍSTICA · PRODEPA</a>
   <nav class="nav" aria-label="Navegação principal">
     <span class="nav-pill" aria-hidden="true"></span>
-    <a href="#inicio">INÍCIO</a><a href="#profissional">RAFAEL</a><a href="#desafio">AUTOMAÇÃO</a><a href="#rkos">RKOS</a><a href="#atlas">ATLAS</a><a href="#resultado">PROPOSTA</a>
+    <a href="#inicio">INÍCIO</a><a href="#profissional">RAFAEL</a><a href="#desafio">LABORATÓRIO</a><a href="#prazos">PRAZOS</a><a href="#rkos">RKOS</a><a href="#atlas">ATLAS</a><a href="#resultado">PROPOSTA</a>
   </nav>
   <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mnav"><i></i>MENU</button>
 </header>
@@ -58,15 +59,15 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
   <ol>
     <li><a href="#inicio" data-chap="inicio"><span class="dot"></span><span class="n">01</span><span class="lbl">IDENTIDADE</span></a></li>
     <li><a href="#profissional" data-chap="profissional"><span class="dot"></span><span class="n">02</span><span class="lbl">RAFAEL</span></a></li>
-    <li><a href="#desafio" data-chap="desafio"><span class="dot"></span><span class="n">03</span><span class="lbl">CENÁRIO</span></a></li>
-    <li><a href="#drive" data-chap="drive"><span class="dot"></span><span class="n">04</span><span class="lbl">ROTINA</span></a></li>
+    <li><a href="#desafio" data-chap="desafio"><span class="dot"></span><span class="n">03</span><span class="lbl">LABORATÓRIO</span></a></li>
+    <li><a href="#rotina" data-chap="rotina"><span class="dot"></span><span class="n">04</span><span class="lbl">PRAZOS</span></a></li>
     <li><a href="#rkos" data-chap="rkos"><span class="dot"></span><span class="n">05</span><span class="lbl">RKOS</span></a></li>
     <li><a href="#atlas" data-chap="atlas"><span class="dot"></span><span class="n">06</span><span class="lbl">ATLAS</span></a></li>
     <li><a href="#resultado" data-chap="resultado"><span class="dot"></span><span class="n">07</span><span class="lbl">PROPOSTA</span></a></li>
   </ol></div>
 </nav>
 <nav class="mnav" id="mnav" aria-label="Menu" hidden>
-  <a href="#inicio"><small>01</small>INÍCIO</a><a href="#profissional"><small>02</small>RAFAEL</a><a href="#desafio"><small>03</small>AUTOMAÇÃO</a><a href="#rkos"><small>05</small>RKOS</a><a href="#atlas"><small>06</small>ATLAS</a><a href="#resultado"><small>07</small>PROPOSTA</a>
+  <a href="#inicio"><small>01</small>INÍCIO</a><a href="#profissional"><small>02</small>RAFAEL</a><a href="#desafio"><small>03</small>LABORATÓRIO</a><a href="#prazos"><small>04</small>PRAZOS</a><a href="#rkos"><small>05</small>RKOS</a><a href="#atlas"><small>06</small>ATLAS</a><a href="#resultado"><small>07</small>PROPOSTA</a>
 </nav>
 
 <main>
@@ -89,7 +90,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
       <p class="lead" data-r style="--s:2">Tecnologia aplicada à realidade da Logística da PRODEPA. Processos, documentos e informação trabalhando a favor das pessoas.</p>
       <p class="hero-sign" data-r style="--s:3"><b>RAFAEL RODRIGUES</b><span>Desenvolvimento de soluções e automação para apoiar o trabalho da equipe.</span></p>
       <div class="hero-cta" data-r style="--s:4">
-        <a class="btn btn-primary" href="#profissional"><span>CONHECER O TRABALHO</span><span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn-primary" href="#laboratorio"><span>EXPERIMENTAR AS DEMONSTRAÇÕES</span><span class="arr" aria-hidden="true">→</span></a>
         <a class="btn btn-ghost" href="#atlas"><span>VER O ATLAS</span><span class="arr" aria-hidden="true">↘</span></a>
       </div>
     </div>
@@ -165,39 +166,8 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
       </div>
     </header>
 
-    <div class="xf" data-xf data-mode="manual" data-r>
-      <div class="xf-head">
-        <div class="seg" role="group" aria-label="Método exibido"><span class="seg-thumb" aria-hidden="true"></span>
-          <button type="button" data-xf-mode="manual" aria-pressed="true">Manual</button><button type="button" data-xf-mode="assisted" aria-pressed="false">Assistido</button>
-        </div>
-        <button class="ghost-btn" type="button" data-xf-play>REPRODUZIR ↺</button>
-      </div>
-      <div class="xf-body">
-        <div class="xf-text">
-          <div class="xf-pane" data-pane="manual">
-            <span class="xf-k">ANTES / PROCESSO MANUAL</span>
-            <h3>Documento por documento</h3>
-            <ol class="xf-steps"><li>Abrir cada arquivo individualmente.</li><li>Localizar a informação necessária.</li><li>Conferir o conteúdo com a planilha ou referência.</li><li>Registrar a atualização e passar ao próximo.</li><li>Repetir as mesmas etapas dezenas de vezes.</li></ol>
-          </div>
-          <div class="xf-pane" data-pane="assisted">
-            <span class="xf-k">COM A AUTOMAÇÃO / APOIO AO SETOR</span>
-            <h3>Processamento organizado</h3>
-            <ol class="xf-steps"><li>Definir o conjunto de documentos e as regras de conferência.</li><li>Executar a rotina automatizada de leitura e atualização.</li><li>Consolidar o resultado em formato verificável.</li><li>Revisar exceções e pontos que exigem decisão humana.</li><li>Entregar à equipe a informação pronta para uso.</li></ol>
-          </div>
-        </div>
-        <div class="xf-stage" aria-hidden="true">
-          <div class="xf-track"><span data-t="0">ABRIR</span><span data-t="1">LER</span><span data-t="2">CONFERIR</span><span data-t="3">REGISTRAR</span></div>
-          <div class="xf-track xf-track-b"><span data-t="0">FONTES</span><span data-t="1">REGRAS</span><span data-t="2">PROCESSAMENTO</span><span data-t="3">REVISÃO</span></div>
-          <div class="xf-field">
-            <div class="xf-batch"><span>CONJUNTO DE DOCUMENTOS</span></div>
-            <div class="xf-tray"><span>REVISÃO HUMANA</span><i class="xf-person"></i></div>
-          </div>
-          <p class="xf-status" data-xf-status>As mesmas ações, repetidas a cada documento.</p>
-        </div>
-      </div>
-      <p class="note">Animação ilustrativa da diferença de método. Não representa quantidades nem tempos medidos.</p>
-    </div>
-
+    <div class="brief" data-r><div><span class="k">PROBLEMA</span><p>Conferir faturas com a planilha, uma a uma, consome atenção em itens que já estão corretos.</p></div><div><span class="k">NA LOGÍSTICA DA PRODEPA</span><p>Conferências recorrentes de faturas, fornecedores e registros de controle.</p></div></div>
+    <div class="demo" data-demo="compare" aria-label="COMPARATIVO · FATURAS × PLANILHA"><div class="demo-tag"><span>COMPARATIVO · FATURAS × PLANILHA</span><span>DEMONSTRAÇÃO FUNCIONAL · DADOS DE EXEMPLO</span></div><noscript><p class="note">Esta demonstração precisa de JavaScript.</p></noscript></div>
     <p class="evidence" data-r><b>Resultado relatado:</b> a atualização de documentos e planilhas que havia consumido dias de trabalho pelo procedimento manual foi concluída em minutos com o método assistido. Resultado já demonstrado e testado; os tempos exatos e o volume de arquivos não são apresentados como métricas auditadas.</p>
   </div>
 </section>
@@ -207,14 +177,28 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
   <span class="ghost" aria-hidden="true">04</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-r>04 / CASO REAL</p>
-      <h2 class="title" data-split>DO MANUAL<br><em>AO FLUXO.</em></h2>
-      <p class="lead" data-r>O trabalho de conferência e atualização de informações do Drive, antes executado documento por documento, passou a contar com automação.</p>
+      <p class="eyebrow" data-r>03 / LABORATÓRIO DE AUTOMAÇÃO</p>
+      <h2 class="title" data-split>EXECUTE.<br><em>CONFIRA O RESULTADO.</em></h2>
+      <p class="lead" data-r>O trabalho de conferência e atualização de informações do Drive, antes executado documento por documento, passou a contar com automação. Aqui você executa uma conferência equivalente, com dados de exemplo.</p>
       <p class="small" data-r><span class="tag">AUTOMAÇÃO DO DRIVE</span> Uma melhoria concreta na rotina da Logística, com ganho de agilidade relatado na execução.</p>
     </div>
     <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
       <div class="frame-clip"><img src="img/04-caso-real.webp" alt="" loading="lazy" decoding="async" width="1120" height="1443"></div>
     </figure>
+  </div>
+</section>
+
+<section class="chapter" id="laboratorio">
+  <div class="wrap">
+    <header class="dhead">
+      <p class="eyebrow" data-r>LABORATÓRIO / CONFERÊNCIA DOCUMENTAL</p>
+      <div>
+        <h2 class="sub" data-split>CONTRATO, ADITIVOS E PLANILHA. <em>A VIGÊNCIA BATE?</em></h2>
+        <p class="intro" data-r>Execute a conferência, depois altere uma data e execute de novo. O resultado é recalculado a partir dos dados.</p>
+      </div>
+    </header>
+    <div class="brief" data-r><div><span class="k">PROBLEMA</span><p>Quando a vigência registrada na planilha não acompanha os termos aditivos, a equipe pode trabalhar com uma data errada.</p></div><div><span class="k">NA LOGÍSTICA DA PRODEPA</span><p>Conferência de vigências antes de responder demandas, renovar contratos ou atualizar controles.</p></div></div>
+    <div class="demo" data-demo="lab" aria-label="LABORATÓRIO · CT-DEMO-2026"><div class="demo-tag"><span>LABORATÓRIO · CT-DEMO-2026</span><span>DEMONSTRAÇÃO FUNCIONAL · DADOS DE EXEMPLO</span></div><noscript><p class="note">Esta demonstração precisa de JavaScript.</p></noscript></div>
   </div>
 </section>
 
@@ -243,7 +227,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
   <span class="ghost" aria-hidden="true">04</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-r>04 / TRABALHO NA LOGÍSTICA</p>
+      <p class="eyebrow" data-r>04 / PRAZOS E CONTINUIDADE</p>
       <h2 class="title" data-split>DADOS QUE<br><em>SE CONECTAM.</em></h2>
       <p class="lead" data-r>Conferência de fornecedores, contratos, números de faturas, vigências, cláusulas e planilhas. O objetivo é facilitar cruzamentos e tornar a informação mais acessível para a equipe.</p>
       <p class="small" data-r><span class="tag">DOCUMENTOS · PLANILHAS · FONTES</span> Automação como apoio à análise administrativa, não como substituição da responsabilidade humana.</p>
@@ -251,6 +235,20 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
     <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
       <div class="frame-clip"><img src="img/06-rotina.webp" alt="" loading="lazy" decoding="async" width="984" height="1600"></div>
     </figure>
+  </div>
+</section>
+
+<section class="chapter" id="prazos">
+  <div class="wrap">
+    <header class="dhead">
+      <p class="eyebrow" data-r>DOSSIÊ / GESTÃO DE PRAZOS</p>
+      <div>
+        <h2 class="sub" data-split>NENHUM CONTRATO <em>VENCE SEM AVISO.</em></h2>
+        <p class="intro" data-r>Selecione um contrato, mude a data de término e veja o status e os alertas serem recalculados.</p>
+      </div>
+    </header>
+    <div class="brief" data-r><div><span class="k">PROBLEMA</span><p>Prorrogações percebidas tarde demais levam a contratos vencidos e serviços sem cobertura.</p></div><div><span class="k">NA LOGÍSTICA DA PRODEPA</span><p>Acompanhamento das vigências dos contratos da Logística e antecipação de aditivos e novas contratações.</p></div></div>
+    <div class="demo" data-demo="prazos" aria-label="PAINEL DE PRAZOS · CONTRATOS DE EXEMPLO"><div class="demo-tag"><span>PAINEL DE PRAZOS · CONTRATOS DE EXEMPLO</span><span>DEMONSTRAÇÃO FUNCIONAL · DADOS DE EXEMPLO</span></div><noscript><p class="note">Esta demonstração precisa de JavaScript.</p></noscript></div>
   </div>
 </section>
 
@@ -281,45 +279,9 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
       </div>
     </header>
 
-    <div class="kgraph" data-kgraph data-r role="group" aria-label="Demonstração conceitual do RKOS: fontes, organização, consulta e resposta com origem">
-      <div class="kg-top">
-        <ol class="kg-phases" aria-label="Etapas"><li data-ph="0">FONTES</li><li data-ph="1">ORGANIZAÇÃO</li><li data-ph="2">CONSULTA</li><li data-ph="3">RESPOSTA FUNDAMENTADA</li></ol>
-        <span class="kg-tag">REPRESENTAÇÃO CONCEITUAL · SEM DADOS REAIS</span>
-      </div>
-      <div class="kg-stage">
-        <svg class="kg-wires" aria-hidden="true"></svg>
-        <div class="kg-col kg-docs">
-          <span class="kg-cap">FONTES AUTORIZADAS</span>
-          <div class="kg-doc" data-doc="contrato"><i aria-hidden="true"></i><span>CONTRATO</span><em>CLÁUSULAS · VIGÊNCIA</em></div>
-          <div class="kg-doc" data-doc="aditivo"><i aria-hidden="true"></i><span>ADITIVO</span><em>VERSÃO · PRORROGAÇÃO</em></div>
-          <div class="kg-doc" data-doc="planilha"><i aria-hidden="true"></i><span>PLANILHA</span><em>CONTROLE · REGISTROS</em></div>
-          <div class="kg-doc" data-doc="portaria"><i aria-hidden="true"></i><span>PORTARIA</span><em>DESIGNAÇÃO · PROCESSO</em></div>
-          <div class="kg-doc" data-doc="fatura"><i aria-hidden="true"></i><span>FATURA</span><em>VALOR · COMPETÊNCIA</em></div>
-        </div>
-        <div class="kg-col kg-mid">
-          <div class="kg-core"><span class="kg-orbit" aria-hidden="true"></span><b>RKOS</b><small data-kg-state>ÍNDICE · CONTEXTO<br>VERSÕES · ORIGEM</small></div>
-        </div>
-        <div class="kg-col kg-out">
-          <span class="kg-cap">ESCOLHA UMA PERGUNTA</span>
-          <div class="kg-qs" role="group" aria-label="Perguntas de exemplo">
-            <button type="button" class="kg-qbtn" data-q="0" aria-pressed="false">Qual é a vigência do contrato e onde isso está registrado?</button>
-            <button type="button" class="kg-qbtn" data-q="1" aria-pressed="false">Quem acompanha a fiscalização deste contrato?</button>
-            <button type="button" class="kg-qbtn" data-q="2" aria-pressed="false">A fatura confere com o que foi contratado?</button>
-          </div>
-          <div class="kg-a" aria-live="polite">
-            <small>RESPOSTA FUNDAMENTADA</small>
-            <p data-kg-answer>Escolha uma pergunta para ver como a informação é localizada e apresentada com a origem.</p>
-            <div class="kg-src" data-kg-src></div>
-            <span class="kg-check">Conferência humana antes de responder</span>
-          </div>
-        </div>
-      </div>
-      <div class="kg-contrast">
-        <p><span>SEM ORGANIZAÇÃO ESTRUTURADA</span>A informação fica em arquivos isolados, o mesmo documento é analisado de novo e versões diferentes geram dúvidas.</p>
-        <p><span>COM A ABORDAGEM RKOS</span>Documentos organizados por contexto, versões identificáveis e consultas feitas com indicação de origem.</p>
-      </div>
-    </div>
-
+    <div class="brief" data-r><div><span class="k">PROBLEMA</span><p>A mesma informação é procurada várias vezes e nem sempre se sabe de qual documento ela veio.</p></div><div><span class="k">NA LOGÍSTICA DA PRODEPA</span><p>Consultas sobre contratos, aditivos, fiscalização e controles com a fonte indicada.</p></div></div>
+    <div class="demo" data-demo="rkos" aria-label="RKOS · CONSULTA DOCUMENTAL"><div class="demo-tag"><span>RKOS · CONSULTA DOCUMENTAL</span><span>DEMONSTRAÇÃO FUNCIONAL · DADOS DE EXEMPLO</span></div><noscript><p class="note">Esta demonstração precisa de JavaScript.</p></noscript></div>
+    <p class="note rk-legend" data-r>As respostas são montadas a partir dos trechos dos documentos de exemplo, os mesmos usados no laboratório. Se você alterar datas no laboratório, as respostas mudam. Não há inteligência artificial nesta demonstração: ela mostra o princípio de consultar com origem.</p>
     <p class="evidence" data-r>O RKOS já está em pleno funcionamento como solução de organização e inteligência documental. Seu uso institucional, as permissões de acesso e eventuais integrações devem seguir as autorizações e regras da PRODEPA.</p>
     <figure class="feature rev" data-r>
       <div class="feature-media"><img src="img/08-rkos-conhecimento.webp" alt="Robô branco examinando painéis digitais com documentos e mapas de informação" loading="lazy" decoding="async" width="864" height="1536"></div>
@@ -355,43 +317,9 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
       </div>
     </header>
 
-    <div class="pipeline" data-pipeline>
-      <div class="pl-head"><span>ATLAS · FLUXO DE TRABALHO NO CLAUDE CODE</span><span class="pl-tag">DEMONSTRAÇÃO CONCEITUAL · DADOS FICTÍCIOS</span></div>
-      <div class="pl-body">
-        <ol class="pl-steps">
-          <li><button type="button" data-step="0" aria-pressed="true"><span class="pl-n">01</span><span class="pl-t">DOCUMENTO</span><span class="pl-d">Recebe o material autorizado e a orientação do setor.</span></button></li>
-          <li><button type="button" data-step="1" aria-pressed="false"><span class="pl-n">02</span><span class="pl-t">ANÁLISE</span><span class="pl-d">Lê e organiza campos, datas e cláusulas.</span></button></li>
-          <li><button type="button" data-step="2" aria-pressed="false"><span class="pl-n">03</span><span class="pl-t">PENDÊNCIAS</span><span class="pl-d">Sinaliza divergências e documentos ausentes.</span></button></li>
-          <li><button type="button" data-step="3" aria-pressed="false"><span class="pl-n">04</span><span class="pl-t">RECOMENDAÇÃO</span><span class="pl-d">Propõe o encaminhamento, indicando as fontes.</span></button></li>
-          <li><button type="button" data-step="4" aria-pressed="false"><span class="pl-n">05</span><span class="pl-t">VALIDAÇÃO HUMANA</span><span class="pl-d">A pessoa responsável confere e decide.</span></button></li>
-        </ol>
-        <div class="pl-stage">
-          <div class="pl-mnav">
-            <button type="button" class="pl-arrow" data-pl-prev aria-label="Etapa anterior">←</button>
-            <div class="pl-now"><span class="pl-count" data-pl-count>01 / 05</span><b data-pl-title>DOCUMENTO</b></div>
-            <button type="button" class="pl-arrow" data-pl-next aria-label="Próxima etapa">→</button>
-          </div>
-          <div class="pl-doc">
-            <div class="pl-doc-head"><span>CONTRATO DE EXEMPLO · Nº 000/0000</span><b class="pl-badge" data-badge>RECEBIDO</b></div>
-            <span class="pl-scan" aria-hidden="true"></span>
-            <dl class="pl-rows">
-              <div class="pl-row"><dt>OBJETO</dt><dd>Prestação de serviço (exemplo)</dd></div>
-              <div class="pl-row"><dt>FORNECEDOR</dt><dd>Empresa Exemplo Ltda.</dd></div>
-              <div class="pl-row flag"><dt>VIGÊNCIA</dt><dd>00/00/0000 a 00/00/0000<em class="pl-flag">Conferir prorrogação</em></dd></div>
-              <div class="pl-row"><dt>VALOR</dt><dd>R$ 0,00 (ilustrativo)</dd></div>
-              <div class="pl-row flag"><dt>ADITIVOS</dt><dd>1º termo aditivo<em class="pl-flag">Publicação não localizada</em></dd></div>
-              <div class="pl-row"><dt>FISCALIZAÇÃO</dt><dd>Portaria de designação</dd></div>
-            </dl>
-            <div class="pl-reco"><small>RECOMENDAÇÃO</small><p>Consultar o processo administrativo para confirmar o aditivo antes de responder.</p><span>FONTES: CLÁUSULA DE VIGÊNCIA · EXTRATO PUBLICADO</span></div>
-            <div class="pl-stamp"><span aria-hidden="true">✓</span><b>CONFERIDO</b><small>PESSOA RESPONSÁVEL</small></div>
-          </div>
-          <div class="pl-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-          <p class="pl-caption" data-caption aria-live="polite">O ATLAS recebe o documento autorizado e a orientação do setor sobre o que conferir.</p>
-        </div>
-      </div>
-      <p class="note">Na prática, o ATLAS opera dentro do Claude Code, com Skills e ferramentas nativas. A decisão final é sempre de uma pessoa.</p>
-    </div>
-
+    <div class="brief" data-r><div><span class="k">PROBLEMA</span><p>Processos de prorrogação reúnem prazos, certidões, aditivos e manifestações que precisam ser conferidos juntos.</p></div><div><span class="k">NA LOGÍSTICA DA PRODEPA</span><p>Apoio à análise de processos administrativos, com a decisão sempre na mão da pessoa responsável.</p></div></div>
+    <div class="demo" data-demo="atlas" aria-label="ATLAS · SIMULADOR DE ANÁLISE"><div class="demo-tag"><span>ATLAS · SIMULADOR DE ANÁLISE</span><span>DEMONSTRAÇÃO FUNCIONAL · DADOS DE EXEMPLO</span></div><noscript><p class="note">Esta demonstração precisa de JavaScript.</p></noscript></div>
+    <p class="note" data-r>Representação do fluxo de trabalho do ATLAS, que opera dentro do Claude Code com Skills e ferramentas nativas. As regras desta simulação estão no próprio código da página.</p>
     <p class="evidence" data-r>Fluxo de trabalho ilustrado com base em soluções operacionais já demonstradas e testadas. A ilustração não representa integração automática a sistemas institucionais.</p>
   </div>
 </section>
@@ -403,7 +331,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
     <h2 class="finale-title" data-split>MENOS ROTINA.<br><em>MAIS GESTÃO.</em></h2>
     <div class="trail" data-trail aria-hidden="true">
       <svg class="trail-svg" viewBox="0 0 1000 40" preserveAspectRatio="none"><path d="M0 20 H1000"/><path class="trail-on" d="M0 20 H1000"/></svg>
-      <ol><li>IDENTIDADE</li><li>RAFAEL</li><li>CENÁRIO</li><li>ROTINA</li><li>RKOS</li><li>ATLAS</li><li>PROPOSTA</li></ol>
+      <ol><li>IDENTIDADE</li><li>RAFAEL</li><li>LABORATÓRIO</li><li>PRAZOS</li><li>RKOS</li><li>ATLAS</li><li>PROPOSTA</li></ol>
     </div>
     <div class="finale-grid">
       <div class="finale-lead">
@@ -457,5 +385,6 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('mot
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="js/experience.js" defer></script>
+<script src="js/demos.js" defer></script>
 </body>
 </html>

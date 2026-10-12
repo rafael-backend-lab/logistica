@@ -114,10 +114,10 @@ if(pill){
 
 /* ---------- capítulos: progresso, luz ambiente, menu ativo, trilha final ---------- */
 var chapLinks=$$('#chap a'), chapTrack=document.querySelector('.chap-track'), navLinks=nav?$$('a',nav):[];
-var chapOf={inicio:'inicio',profissional:'profissional',desafio:'desafio','antes-depois':'desafio',drive:'drive',exemplos:'drive',rotina:'drive',rkos:'rkos','rkos-na-pratica':'rkos',atlas:'atlas','atlas-na-pratica':'atlas',resultado:'resultado'};
-var navOf={inicio:'#inicio',profissional:'#profissional',desafio:'#desafio',drive:'#desafio',rkos:'#rkos',atlas:'#atlas',resultado:'#resultado'};
+var chapOf={inicio:'inicio',profissional:'profissional',desafio:'desafio','antes-depois':'desafio',drive:'desafio',laboratorio:'desafio',exemplos:'desafio',rotina:'rotina',prazos:'rotina',rkos:'rkos','rkos-na-pratica':'rkos',atlas:'atlas','atlas-na-pratica':'atlas',resultado:'resultado'};
+var navOf={inicio:'#inicio',profissional:'#profissional',desafio:'#desafio',rotina:'#prazos',rkos:'#rkos',atlas:'#atlas',resultado:'#resultado'};
 /* iluminação de cada capítulo: posição x, posição y (%) e intensidade */
-var LIGHT={inicio:[72,22,1],profissional:[18,30,.6],desafio:[82,72,.4],drive:[30,58,.65],rkos:[50,42,.8],atlas:[78,36,.9],resultado:[50,96,.85]};
+var LIGHT={inicio:[72,22,1],profissional:[18,30,.6],desafio:[82,62,.55],rotina:[30,58,.65],rkos:[50,42,.8],atlas:[78,36,.9],resultado:[50,96,.85]};
 var order=chapLinks.map(function(a){return a.getAttribute('data-chap');});
 var secs=$$('main > section[id]'), starts={}, curChap=null;
 var progress=document.getElementById('progress'), trail=document.querySelector('[data-trail]'), trailItems=trail?$$('li',trail):[];

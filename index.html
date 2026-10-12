@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <style>html,body{background:#0b0907}</style>
+<script>
+/* classes de estado antes da pintura; se a camada de movimento não carregar em 3 s, tudo fica visível */
+(function(d){var r=d.documentElement;r.classList.add('js');
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('motion');setTimeout(function(){if(!window.__xp)r.classList.remove('motion');},3000);}
+})(document);
+</script>
 <link rel="preload" as="image" href="img/01-abertura.webp" fetchpriority="high">
 <title>Rafael Rodrigues · Logística Inteligente</title>
 <meta name="description" content="Portfólio executivo de Rafael Rodrigues: automação e gestão de informação na Logística da PRODEPA, RKOS e Atlas.">
@@ -30,1081 +36,341 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
-<style>
-/* Layout: dossiê operacional — capítulos em tela cheia (texto + robô em moldura), intercalados com dossiês de leitura; tudo alinhado à esquerda numa coluna de 1240px. */
-:root{
-  color-scheme:dark;
-  --ink:#0b0907;          /* preto quente, o mesmo das fotos dos robôs */
-  --surface:#15110d;
-  --surface-2:#1e1813;
-  --paper:#efe6d8;        /* papel de documento: texto principal */
-  --muted:#a89b8c;
-  --ember:#ff7a1a;        /* brilho laranja que já existe nas imagens */
-  --ember-hot:#ffb067;
-  --signal:#8fe3b5;       /* LED de status operacional */
-  --line:rgba(239,230,216,.12);
-  --line-2:rgba(239,230,216,.24);
-  --ember-soft:rgba(255,122,26,.13);
-  --f-display:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;
-  --f-body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
-  --gutter:clamp(16px,5vw,80px);
-  --maxw:1240px;
-  --hdr:72px;
-  --ease:cubic-bezier(.2,.8,.2,1);
-}
-*,*::before,*::after{box-sizing:border-box}
-[hidden]{display:none!important}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 24px);background:var(--ink)}
-body{margin:0;overflow-x:hidden;background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:17px;line-height:1.62;overflow-x:clip;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-img{max-width:100%;display:block}
-a{color:inherit}
-em{font-style:normal;color:var(--ember)}
-b,strong{font-weight:700;color:#fff8ee}
-::selection{background:var(--ember);color:#140a03}
-:focus-visible{outline:2px solid var(--ember-hot);outline-offset:4px;border-radius:4px}
-.wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
-
-/* ---------- ambiente ---------- */
-.grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
-.glow{position:fixed;left:0;top:0;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;pointer-events:none;z-index:0;
-  background:radial-gradient(circle,rgba(255,122,26,.10),rgba(255,122,26,.03) 40%,transparent 68%);transform:translate3d(50vw,30vh,0);will-change:transform}
-.cursor{position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid rgba(255,176,103,.7);border-radius:50%;pointer-events:none;z-index:90;
-  transition:width .25s var(--ease),height .25s var(--ease),margin .25s var(--ease),background-color .25s,border-color .25s;opacity:0}
-.cursor.on{opacity:1}
-.cursor.big{width:72px;height:72px;margin:-36px 0 0 -36px;background:rgba(255,122,26,.12);border-color:var(--ember)}
-.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:80;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--ember),var(--ember-hot))}
-
-main,.footer{position:relative;z-index:1}
-/* ---------- cabeçalho ---------- */
-.skip-link{position:fixed;left:12px;top:-80px;z-index:100;background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:8px;font-weight:700;text-decoration:none}
-.skip-link:focus{top:12px}
-.hdr{position:fixed;z-index:70;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;width:min(calc(100% - 24px),1320px);transform:translateX(-50%);
-  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 12px 10px 20px;border-radius:14px;
-  background:rgba(21,17,13,.62);border:1px solid var(--line);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
-  transition:transform .45s var(--ease),background-color .3s,border-color .3s}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.hdr{background:rgba(15,12,9,.95)}}
-.hdr.scrolled{background:rgba(15,12,9,.84);border-color:rgba(255,122,26,.28)}
-.hdr.hide{transform:translate(-50%,calc(-100% - 24px))}
-.brand{display:inline-flex;align-items:center;min-height:40px;font:600 12px/1 var(--f-mono);letter-spacing:.12em;color:var(--ember-hot);text-decoration:none;white-space:nowrap}
-.nav{display:flex;gap:2px}
-.nav a{position:relative;padding:10px 14px;border-radius:9px;font:500 12px/1 var(--f-mono);letter-spacing:.1em;text-decoration:none;color:var(--muted);transition:color .2s,background-color .2s}
-.nav a:hover{color:var(--paper);background:rgba(239,230,216,.06)}
-.nav a[aria-current="true"]{color:var(--paper)}
-.nav a[aria-current="true"]::after{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:2px;border-radius:2px;background:var(--ember)}
-.menu-btn{display:none;align-items:center;gap:10px;min-height:44px;padding:10px 14px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--paper);font:600 12px/1 var(--f-mono);letter-spacing:.12em;cursor:pointer}
-.menu-btn i{display:block;width:16px;height:2px;background:currentColor;position:relative;transition:transform .3s}
-.menu-btn i::before{content:"";position:absolute;left:0;top:-5px;width:16px;height:2px;background:currentColor;transition:transform .3s}
-.menu-btn[aria-expanded="true"] i{transform:rotate(45deg)}
-.menu-btn[aria-expanded="true"] i::before{transform:translateY(5px) rotate(-90deg)}
-.mnav{position:fixed;inset:0;z-index:65;background:rgba(11,9,7,.97);display:flex;flex-direction:column;justify-content:center;gap:4px;padding:calc(var(--hdr) + 40px) var(--gutter) 40px}
-.mnav a{display:flex;align-items:baseline;gap:16px;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;font:800 clamp(40px,12vw,64px)/1 var(--f-display);color:var(--paper);
-  opacity:0;transform:translateY(24px);animation:mIn .55s var(--ease) forwards}
-.mnav a small{font:500 12px/1 var(--f-mono);color:var(--ember);letter-spacing:.1em}
-.mnav a:nth-child(2){animation-delay:.05s}.mnav a:nth-child(3){animation-delay:.1s}.mnav a:nth-child(4){animation-delay:.15s}.mnav a:nth-child(5){animation-delay:.2s}
-@keyframes mIn{to{opacity:1;transform:none}}
-
-/* ---------- tipografia ---------- */
-.eyebrow,.kicker{margin:0 0 22px;font:500 12px/1.5 var(--f-mono);letter-spacing:.16em;color:var(--ember-hot)}
-.eyebrow::before{content:"";display:inline-block;width:28px;height:1px;margin-right:12px;vertical-align:middle;background:var(--ember)}
-.display,.title,.sub{font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:-.005em;margin:0;text-wrap:balance}
-.display{font-weight:900;font-size:clamp(64px,9.4vw,156px);line-height:.84}
-.title{font-size:clamp(52px,6.9vw,112px);line-height:.86}
-.sub{font-size:clamp(44px,6.2vw,98px);line-height:.9;max-width:16ch}
-.decoding{color:var(--ember-hot)}
-span.dw{display:inline-block!important;white-space:pre!important;vertical-align:top!important;margin:0!important;padding:0!important;font:inherit!important;color:inherit!important;letter-spacing:inherit!important;text-transform:inherit!important}
-.decoding em{color:var(--paper)}
-.lead{font-size:clamp(18px,1.6vw,22px);line-height:1.55;max-width:34em;color:#e4dacb;margin:26px 0 0}
-.intro{font-size:clamp(18px,1.55vw,21px);line-height:1.62;max-width:40em;color:#ddd2c2;margin:28px 0 0}
-.small{font-size:14px;line-height:1.6;color:var(--muted);max-width:36em;margin:14px 0 0}
-.rule{width:72px;height:2px;margin-top:30px;background:linear-gradient(90deg,var(--ember),transparent);transform-origin:0 50%}
-.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
-.tag{display:inline-flex;align-items:center;padding:9px 13px;border-radius:999px;border:1px solid rgba(255,122,26,.42);background:var(--ember-soft);font:500 12px/1 var(--f-mono);letter-spacing:.1em;color:#ffcfa6}
-
-/* ---------- capítulos (cenas) ---------- */
-.scene{position:relative;isolation:isolate;padding-block:clamp(120px,12vw,180px) clamp(70px,8vw,120px);overflow:clip}
-.scene .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:center;gap:clamp(32px,6vw,96px)}
-.scene.flip .copy{order:2}
-.scene .copy{position:relative;z-index:3;min-width:0}
-.scene .wrap.scene-foot{display:flex}
-@media (min-width:901px){#inicio .wrap:not(.scene-foot){grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)}}
-.ghost{position:absolute;z-index:-1;top:2%;right:-2vw;display:block;height:.8em;overflow:visible;font:900 clamp(220px,38vw,620px)/.8 var(--f-display);color:transparent;-webkit-text-stroke:1px rgba(255,122,26,.16);pointer-events:none;user-select:none;will-change:transform}
-.scene.flip .ghost{right:auto;left:-2vw}
-.frame{position:relative;margin:0;justify-self:center;width:100%;max-width:560px;border-radius:6px;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease);transform-style:preserve-3d}
-.frame-clip{position:relative;overflow:hidden;border-radius:6px;height:clamp(460px,76vh,780px);background:#000;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px var(--line)}
-.frame-clip img{width:100%;height:100%;object-fit:cover;object-position:center 30%;transform:translate3d(0,var(--py,0px),0) scale(1.08);will-change:transform}
-.frame-clip::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px circle at var(--gx,50%) var(--gy,30%),rgba(255,176,103,.16),transparent 60%),linear-gradient(0deg,rgba(11,9,7,.55),transparent 35%);opacity:.9}
-.frame-tick{position:absolute;z-index:2;font:500 12px/1 var(--f-mono);letter-spacing:.14em;color:rgba(239,230,216,.7);pointer-events:none}
-.frame-tick.tl{top:14px;left:14px}.frame-tick.br{right:14px;bottom:14px;color:var(--ember-hot)}
-.corner{position:absolute;width:22px;height:22px;border-color:var(--ember);border-style:solid;z-index:3;pointer-events:none}
-.corner.a{top:-8px;left:-8px;border-width:2px 0 0 2px}.corner.b{bottom:-8px;right:-8px;border-width:0 2px 2px 0}
-.scene-foot{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:clamp(40px,6vw,80px)}
-.next{display:inline-flex;align-items:center;gap:10px;min-height:44px;font:500 12px/1 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot);text-decoration:none}
-.next:hover{color:#fff}
-.count{font:500 12px/1 var(--f-mono);letter-spacing:.14em;color:var(--muted);font-variant-numeric:tabular-nums}
-.seal{font:500 12px/1 var(--f-mono);letter-spacing:.22em;color:rgba(239,230,216,.5)}
-#inicio{padding-top:clamp(130px,14vw,190px)}
-#inicio .frame-clip{height:clamp(480px,80vh,820px)}
-
-/* status operacional */
-.status{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:22px;padding:12px 16px;border-radius:12px;border:1px solid rgba(143,227,181,.3);background:rgba(143,227,181,.06);font:500 12px/1.5 var(--f-mono);color:#d9efe2}
-.status strong{color:var(--signal);font-weight:600;letter-spacing:.06em}
-.status .led{position:relative;width:8px;height:8px;border-radius:50%;background:var(--signal);flex:none}
-.status .led::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--signal);animation:ping 2s var(--ease) infinite}
-@keyframes ping{from{transform:scale(.4);opacity:.9}to{transform:scale(1.8);opacity:0}}
-
-/* painel do fluxo do Drive */
-.panel{margin-top:32px;padding:clamp(18px,2.4vw,28px);border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(30,24,19,.92),rgba(14,11,9,.95))}
-.panel-head{font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot);padding-bottom:14px;border-bottom:1px solid var(--line)}
-.pipe{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:8px;margin-top:20px}
-.pnode{display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:96px;padding:14px;border-radius:10px;border:1px solid var(--line);background:rgba(239,230,216,.03);text-align:center;animation:nodeOn 4.5s var(--ease) infinite}
-.pnode:nth-of-type(2){animation-delay:1.5s}.pnode:nth-of-type(3){animation-delay:3s}
-.pnode strong{font:800 18px/1 var(--f-display);letter-spacing:.04em}
-.pnode span{font:400 12px/1.4 var(--f-mono);color:var(--muted)}
-@keyframes nodeOn{0%,100%{border-color:var(--line);box-shadow:none}12%,30%{border-color:var(--ember);box-shadow:0 0 30px rgba(255,122,26,.25),inset 0 0 20px rgba(255,122,26,.08)}}
-.parrow{align-self:center;color:var(--ember);font-size:20px}
-.stream{position:relative;height:132px;margin-top:16px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(255,122,26,.06) 47px 48px),#0e0b09}
-.stream .wire{position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,122,26,.45);box-shadow:0 0 16px rgba(255,122,26,.6)}
-.packet{position:absolute;left:0;top:var(--y);padding:8px 10px;border-radius:6px;border:1px solid rgba(255,140,60,.75);background:#2a170c;color:#ffe2c8;font:500 10px/1 var(--f-mono);white-space:nowrap;animation:pkt var(--t) linear infinite;animation-delay:var(--d)}
-@keyframes pkt{from{transform:translateX(-140px)}to{transform:translateX(min(100vw,620px))}}
-.caption{font-size:12px;line-height:1.5;color:var(--muted);margin:12px 0 0}
-
-/* ---------- dossiês ---------- */
-.dossier{position:relative;padding-block:clamp(90px,11vw,170px);border-top:1px solid var(--line)}
-.dossier::before{content:"";position:absolute;top:-1px;left:var(--gutter);width:120px;height:1px;background:var(--ember)}
-
-/* perfil */
-.profile{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,90px);align-items:start}
-.portrait{position:sticky;top:calc(var(--hdr) + 40px);margin:0;border-radius:4px 120px 4px 4px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.5)}
-.portrait img{width:100%;height:clamp(460px,72vh,760px);object-fit:cover;object-position:center 22%}
-.portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(11,9,7,.85),transparent 35%);pointer-events:none}
-.portrait figcaption{position:absolute;z-index:2;left:20px;bottom:20px;right:20px;font:500 12px/1.4 var(--f-mono);letter-spacing:.14em;color:#fff;white-space:pre-wrap}
-.stack{margin-top:44px;display:grid;gap:18px;padding-bottom:20px}
-.stack .card{position:sticky;top:calc(var(--hdr) + 40px + var(--i) * 18px)}
-.card{position:relative;isolation:isolate;padding:clamp(22px,2.6vw,32px);border-radius:18px;border:1px solid var(--line);background:linear-gradient(155deg,#211a14,#130f0c 70%);box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-.card .num{display:block;font:500 12px/1.4 var(--f-mono);letter-spacing:.12em;color:var(--ember-hot)}
-.card strong{display:block;margin:10px 0 8px;font:800 clamp(24px,2.4vw,32px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.01em;color:var(--paper)}
-.card p{margin:0;color:#cfc4b5;font-size:16px;line-height:1.6}
-.spot::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;opacity:0;transition:opacity .35s;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(255,122,26,.16),transparent 65%)}
-.spot:hover::before{opacity:1}
-.spot{transition:border-color .35s,transform .45s var(--ease)}
-.spot:hover{border-color:rgba(255,122,26,.45)}
-.closing{margin:44px 0 0;padding-left:24px;border-left:2px solid var(--ember);font-size:clamp(22px,2.4vw,32px);line-height:1.38;max-width:30em;color:var(--paper)}
-.closing em{color:var(--ember-hot)}
-[data-words] .w{transition:color .35s,opacity .35s}
-.motion [data-words] .w{opacity:.22}
-.motion [data-words] .w.lit{opacity:1}
-
-
-/* perfil com foto no topo */
-.profile2{display:flex;flex-direction:column;align-items:center;text-align:center}
-.profile2>.kicker{margin-bottom:34px}
-.avatar{position:relative;margin:0;width:min(340px,78vw)}
-.avatar-clip{position:relative;overflow:hidden;border-radius:999px 999px 28px 28px;aspect-ratio:3/4;background:#000;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px var(--line)}
-.avatar-clip img{width:100%;height:100%;object-fit:cover;object-position:center 34%}
-.avatar-clip::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(11,9,7,.55),transparent 40%);pointer-events:none}
-.avatar-ring{position:absolute;inset:-14px;border-radius:999px 999px 38px 38px;border:1px solid rgba(255,122,26,.35);pointer-events:none}
-.avatar-ring::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:conic-gradient(from var(--a,0deg),transparent 0 70%,var(--ember) 85%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:ringSpin 6s linear infinite}
-@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
-@keyframes ringSpin{to{--a:360deg}}
-.name{margin:42px 0 0;font:900 clamp(56px,9vw,132px)/.86 var(--f-display);text-transform:uppercase;letter-spacing:-.005em;color:var(--paper);text-wrap:balance}
-.role{margin:18px 0 0;font:500 clamp(12px,1.2vw,14px)/1.6 var(--f-mono);letter-spacing:.16em;color:var(--ember-hot);max-width:60em;text-wrap:balance}
-.bio{display:grid;gap:22px;max-width:44em;margin-top:44px;text-align:left}
-.bio>p{margin:0;font-size:clamp(17px,1.5vw,20px);line-height:1.7;color:#ddd2c2}
-.tools-block{padding:22px 24px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,#1c1612,#100d0b)}
-.tools-block .k,.diff .k{display:block;font:500 12px/1.4 var(--f-mono);letter-spacing:.16em;color:var(--ember-hot);margin-bottom:14px}
-.tools{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.tools li{padding:9px 14px;border-radius:999px;border:1px solid rgba(255,122,26,.4);background:var(--ember-soft);font:600 13px/1 var(--f-mono);color:#ffd9b8;transition:background-color .25s,transform .25s var(--ease)}
-.tools li:hover{background:rgba(255,122,26,.28);transform:translateY(-2px)}
-.tools-block p{margin:16px 0 0;font-size:16px;line-height:1.6;color:#cfc4b5}
-.diff{max-width:44em;margin-top:40px;padding:clamp(22px,3vw,36px);border-radius:20px;border:1px solid rgba(255,122,26,.4);background:linear-gradient(120deg,rgba(255,122,26,.16),rgba(255,122,26,.03));text-align:left}
-.diff p{margin:0;font-size:clamp(20px,2.2vw,28px);line-height:1.45;color:var(--paper)}
-.gh{display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-top:36px;padding:18px 28px;border-radius:16px;border:1px solid var(--line-2);background:#14100d;text-decoration:none;transition:border-color .3s,box-shadow .3s,background-color .3s;will-change:transform}
-.gh:hover{border-color:var(--ember);background:#1c140e;box-shadow:0 18px 50px rgba(255,122,26,.18)}
-.gh-k{font:500 12px/1 var(--f-mono);letter-spacing:.16em;color:var(--muted)}
-.gh-url{font:700 clamp(17px,1.8vw,22px)/1.2 var(--f-mono);color:var(--paper)}
-.gh-url i{font-style:normal;color:var(--ember)}
-/* ajustes do botão GitHub em telas pequenas: vêm depois das regras gerais para não serem sobrescritos */
-@media (max-width:640px){.gh{max-width:100%;padding:16px 18px}.gh-url{font-size:15px;white-space:nowrap}}
-@media (max-width:400px){.gh{padding:14px 14px}.gh-url{font-size:13px;letter-spacing:-.01em}}
-@media (max-width:300px){.gh-url{font-size:12px}}
-.howto{margin-top:64px;width:100%;text-align:left}
-.profile2>.closing{text-align:left;align-self:stretch;max-width:30em;margin-inline:auto}
-
-/* faixa */
-.marquee{position:relative;z-index:2;overflow:hidden;border-block:1px solid var(--line);background:#100c0a;padding-block:22px}
-.marquee::before,.marquee::after{content:"";position:absolute;z-index:2;top:0;bottom:0;width:90px;pointer-events:none}
-.marquee::before{left:0;background:linear-gradient(90deg,#100c0a,transparent)}
-.marquee::after{right:0;background:linear-gradient(-90deg,#100c0a,transparent)}
-.mtrack{display:flex;width:max-content;gap:56px;will-change:transform}
-.mtrack span{display:inline-flex;align-items:center;gap:56px;white-space:nowrap;font:800 clamp(28px,4vw,52px)/1 var(--f-display);letter-spacing:.02em;color:transparent;-webkit-text-stroke:1px rgba(239,230,216,.45)}
-.mtrack span:nth-child(odd){color:var(--paper);-webkit-text-stroke:0}
-.mtrack span::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ember)}
-
-/* comparativos */
-.switch{display:inline-flex;gap:4px;margin-top:36px;padding:4px;border-radius:12px;border:1px solid var(--line-2);background:rgba(239,230,216,.03)}
-.switch button{min-height:44px;padding:0 20px;border:0;border-radius:9px;background:transparent;color:var(--muted);font:600 14px/1 var(--f-body);cursor:pointer;transition:background-color .3s,color .3s}
-.switch button[aria-pressed="true"]{background:var(--ember);color:#160903}
-.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}
-.side{position:relative;isolation:isolate;min-width:0;padding:clamp(22px,2.6vw,32px);border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,#1c1612,#100d0b);transition:opacity .5s,transform .5s var(--ease),border-color .5s,filter .5s}
-.side.after{background:linear-gradient(160deg,#2a1810,#110c0a)}
-.js .duo .side:not(.is-active){background:linear-gradient(160deg,#1a1512,#0f0c0a)}
-.js .duo .side.is-active{border-color:rgba(255,122,26,.7);background:linear-gradient(160deg,rgba(255,122,26,.16),rgba(255,122,26,.04) 55%),linear-gradient(160deg,#21170f,#110c0a);box-shadow:inset 0 0 0 1px rgba(255,122,26,.25),0 0 50px rgba(255,90,20,.1)}
-.side .state{font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--muted)}
-.side.after .state{color:var(--ember-hot)}
-.side h3{margin:12px 0 18px;font:800 clamp(28px,3vw,40px)/1 var(--f-display);text-transform:uppercase;color:var(--paper)}
-.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
-.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:start;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(239,230,216,.025);line-height:1.5;color:#ddd2c2}
-.steps li::before{content:counter(s,decimal-leading-zero);font:600 12px/1.6 var(--f-mono);color:var(--ember-hot)}
-.side.is-active .steps li{animation:stepIn .6s var(--ease) both}
-.side.is-active .steps li:nth-child(2){animation-delay:.07s}.side.is-active .steps li:nth-child(3){animation-delay:.14s}.side.is-active .steps li:nth-child(4){animation-delay:.21s}.side.is-active .steps li:nth-child(5){animation-delay:.28s}
-@keyframes stepIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-.chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:20px}
-.chips span{padding:8px 12px;border-radius:8px;border:1px solid var(--line-2);font:500 12px/1 var(--f-mono);letter-spacing:.08em;color:#e8dccb}
-.chips i{font-style:normal;color:var(--ember)}
-.side.is-active .chips span{animation:chip 2.4s var(--ease) infinite}
-.side.is-active .chips span:nth-of-type(2){animation-delay:.6s}.side.is-active .chips span:nth-of-type(3){animation-delay:1.2s}.side.is-active .chips span:nth-of-type(4){animation-delay:1.8s}
-@keyframes chip{0%,60%,100%{border-color:var(--line-2);background:transparent}20%{border-color:var(--ember);background:var(--ember-soft)}}
-.evidence{margin-top:28px;padding:20px 24px;border-radius:0 14px 14px 0;border-left:3px solid var(--ember);background:rgba(255,122,26,.07);color:#e6dccd;line-height:1.65;max-width:62em}
-
-/* destaque com imagem */
-.feature{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:center;margin-block:clamp(40px,6vw,80px);border-radius:22px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(130deg,#1d130d,#0e0b09 70%)}
-.feature-media{position:relative;height:clamp(380px,48vw,640px);overflow:hidden}
-.feature-media img{width:100%;height:100%;object-fit:cover;object-position:center 40%;transform:translate3d(0,var(--py,0px),0) scale(1.1);will-change:transform;transition:filter .6s}
-.feature:hover .feature-media img{filter:contrast(1.08) brightness(1.05)}
-.feature-copy{padding:clamp(24px,4vw,56px);display:flex;flex-direction:column;gap:18px;min-width:0}
-.feature-copy .k{font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.feature-copy strong{font:800 clamp(32px,3.8vw,58px)/.95 var(--f-display);text-transform:uppercase;color:var(--paper);text-wrap:balance}
-.feature-copy p{margin:0;color:#cfc4b5;line-height:1.7;font-size:17px}
-
-/* grade de casos */
-.bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}
-.bento .card{box-shadow:none}
-.bento .card:hover{transform:translateY(-6px)}
-
-/* exemplo "digitado" */
-.example{margin-top:28px;max-width:62em;padding:clamp(22px,2.6vw,32px);border-radius:18px;border:1px solid rgba(255,140,60,.35);background:linear-gradient(160deg,#1e150f,#0f0c0a)}
-.example .k{font:600 12px/1.5 var(--f-mono);letter-spacing:.12em;color:var(--ember-hot)}
-.example p{margin:14px 0 0;line-height:1.7;color:#ddd2c2}
-.example .ask{font-size:clamp(18px,1.8vw,22px);color:var(--paper)}
-.example b{color:var(--ember-hot)}
-.caret::after{content:"";display:inline-block;width:.55em;height:1.05em;margin-left:2px;vertical-align:-.15em;background:var(--ember);animation:blink .8s steps(2) infinite}
-@keyframes blink{50%{opacity:0}}
-.js .pending{visibility:hidden}
-
-/* fluxo conceitual (acende com a rolagem) */
-.flow{margin-top:40px;padding:clamp(20px,2.6vw,32px);border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,#18130f,#0e0b09)}
-.flow .cap{margin:0 0 22px;font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--muted)}
-.rail{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.rail::before,.rail::after{content:"";position:absolute;left:12.5%;right:12.5%;top:22px;height:2px;border-radius:2px;background:var(--line-2)}
-.rail::after{background:linear-gradient(90deg,var(--ember),var(--ember-hot));right:auto;width:calc(75% * var(--p,1));box-shadow:0 0 14px rgba(255,122,26,.6)}
-.fnode{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;min-width:0}
-.fnode .dot{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line-2);background:#0e0b09;font:600 12px/1 var(--f-mono);color:var(--muted);transition:all .45s var(--ease)}
-.fnode.on .dot{border-color:var(--ember);color:#160903;background:var(--ember);box-shadow:0 0 0 6px rgba(255,122,26,.14),0 0 30px rgba(255,122,26,.45)}
-.fnode .lbl{font:600 12px/1.4 var(--f-mono);letter-spacing:.1em;color:var(--ember-hot)}
-.fnode .txt{font-size:15px;line-height:1.4;color:#ddd2c2}
-
-/* console do Atlas */
-.console{margin-top:24px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,140,60,.3);background:#0d0a08;box-shadow:0 40px 90px rgba(0,0,0,.45)}
-.console-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font:500 12px/1 var(--f-mono);letter-spacing:.12em;color:var(--muted)}
-.console-bar .dots{display:flex;gap:6px}.console-bar .dots i{width:10px;height:10px;border-radius:50%;background:#3a2c22}.console-bar .dots i:first-child{background:var(--ember)}
-.replay{min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line-2);background:transparent;color:var(--paper);font:500 12px/1 var(--f-mono);letter-spacing:.1em;cursor:pointer}
-.replay:hover{border-color:var(--ember)}
-.msgs{display:grid;gap:0}
-.msg{display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;padding:22px clamp(18px,2.4vw,28px);border-bottom:1px solid var(--line)}
-.msg:last-child{border-bottom:0}
-.msg .num{font:600 12px/1.6 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.msg strong{display:block;font:800 clamp(24px,2.6vw,34px)/1.05 var(--f-display);text-transform:uppercase;color:var(--paper)}
-.msg p{margin:8px 0 0;color:#cfc4b5;line-height:1.6;transition:opacity .5s}
-.js .msg.wait p{opacity:0}
-
-/* valor */
-.values{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:40px}
-.values div{position:relative;isolation:isolate;padding:24px 20px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,#1c1612,#100d0b);font:800 clamp(22px,2vw,28px)/1.05 var(--f-display);text-transform:uppercase;color:var(--paper)}
-.values div::after{content:"";position:absolute;left:20px;right:20px;top:0;height:2px;background:var(--ember);transform:scaleX(.25);transform-origin:0 50%;transition:transform .6s var(--ease)}
-.values div:hover::after{transform:scaleX(1)}
-.values small{display:block;margin-top:10px;font:400 15px/1.5 var(--f-body);text-transform:none;color:#cfc4b5}
-
-/* visão executiva */
-.results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:44px}
-.result{position:relative;isolation:isolate;padding:28px 24px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,#211811,#0f0c0a)}
-.result b{display:block;font:900 clamp(36px,3.7vw,58px)/.9 var(--f-display);text-transform:uppercase;color:var(--ember-hot);letter-spacing:.01em}
-.result span{display:block;margin-top:12px;color:#d6cbbb;line-height:1.5}
-
-/* demonstração */
-.casefile{margin-top:40px;padding:clamp(20px,2.6vw,30px);border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,#1a140f,#0e0b09)}
-.casefile-index{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding-bottom:18px;margin-bottom:18px;border-bottom:1px dashed var(--line-2)}
-.casefile-index span{font:500 12px/1.4 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.casefile-index strong{font:800 clamp(26px,2.8vw,36px)/1 var(--f-display);text-transform:uppercase}
-.casefile-index small{font-size:13px;color:var(--muted)}
-.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.fields>div{padding:18px;border-radius:12px;border:1px solid var(--line);background:rgba(239,230,216,.025)}
-.fields small{display:block;font:500 12px/1.4 var(--f-mono);letter-spacing:.12em;color:var(--ember-hot);margin-bottom:8px}
-.fields b{display:block;font-size:17px;margin-bottom:6px}
-.fields p{margin:0;font-size:15px;line-height:1.55;color:#cfc4b5}
-.bench-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin:56px 0 20px}
-.bench-head .k{display:block;font:500 12px/1.4 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot);margin-bottom:8px}
-.bench-head h3{margin:0;font:800 clamp(32px,3.6vw,48px)/1 var(--f-display);text-transform:uppercase}
-.chip-pill{padding:9px 14px;border-radius:999px;border:1px solid rgba(255,122,26,.45);background:var(--ember-soft);font:500 12px/1 var(--f-mono);letter-spacing:.12em;color:#ffcfa6}
-.track .top{font:600 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--muted)}
-.track.after .top{color:var(--ember-hot)}
-.track .subtitle{margin:8px 0 18px;font:800 clamp(20px,2vw,26px)/1.1 var(--f-display);text-transform:uppercase;color:var(--paper)}
-.note{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:14px;line-height:1.6;color:var(--muted)}
-.verdict{margin-top:20px;padding:clamp(22px,2.8vw,34px);border-radius:18px;background:linear-gradient(120deg,rgba(255,122,26,.18),rgba(255,122,26,.04));border:1px solid rgba(255,122,26,.35)}
-.verdict span{display:block;font:500 12px/1.4 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot);margin-bottom:10px}
-.verdict p{margin:0 0 12px;font-size:clamp(20px,2.2vw,28px);line-height:1.4;color:var(--paper);max-width:34em}
-.verdict small{display:block;font-size:14px;line-height:1.6;color:#d6cbbb;max-width:60em}
-.method{margin-top:40px;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,60px);padding-top:40px;border-top:1px solid var(--line)}
-.method h3{margin:0;font:800 clamp(30px,3.4vw,46px)/1 var(--f-display);text-transform:uppercase;text-wrap:balance}
-.method p{margin:0 0 14px;line-height:1.7;color:#d6cbbb}
-.method .disc{font-size:13px;color:var(--muted)}
-
-/* proposta */
-.proposal{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(32px,5vw,80px);align-items:start}
-.proposal p{line-height:1.7;color:#ddd2c2;max-width:36em}
-.cta{display:inline-flex;align-items:center;gap:12px;min-height:56px;margin-top:20px;padding:0 26px;border-radius:12px;background:var(--ember);color:#160903;text-decoration:none;font:700 13px/1 var(--f-mono);letter-spacing:.1em;transition:background-color .3s,box-shadow .3s;will-change:transform}
-.cta:hover{background:var(--ember-hot);box-shadow:0 14px 40px rgba(255,122,26,.35)}
-.facts{display:grid;gap:12px}
-.fact{position:relative;isolation:isolate;padding:20px 22px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(160deg,#1c1612,#100d0b)}
-.fact strong{display:block;margin-bottom:6px;font:800 21px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.03em;color:var(--ember-hot)}
-.fact span{color:#d6cbbb;line-height:1.55;font-size:15px}
-
-.footer{position:relative;padding-block:90px 70px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:14px;line-height:1.7}
-.footer strong{display:block;margin-bottom:8px;font:900 clamp(48px,8vw,110px)/.9 var(--f-display);color:transparent;-webkit-text-stroke:1px rgba(255,122,26,.7);letter-spacing:.01em}
-.footer .inner{max-width:52em;margin-inline:auto}
-
-/* ---------- entrada com movimento (só quando há JS e movimento permitido) ---------- */
-.motion [data-reveal]{opacity:0;transform:translate3d(0,34px,0);transition:opacity .9s var(--ease),transform 1s var(--ease)}
-.motion [data-reveal].in{opacity:1;transform:none}
-.motion [data-reveal="left"]{transform:translate3d(-40px,0,0)}
-.motion .frame-clip{clip-path:inset(14% 10% 14% 10% round 6px);transition:clip-path 1.4s var(--ease)}
-.motion .frame.in .frame-clip{clip-path:inset(0 0 0 0 round 6px)}
-.motion .rule{transform:scaleX(0);transition:transform 1.1s .3s var(--ease)}
-.motion .in .rule,.motion .rule.in{transform:scaleX(1)}
-.motion .stagger>*{opacity:0;transform:translate3d(0,26px,0);transition:opacity .8s var(--ease),transform .9s var(--ease)}
-.motion .stagger.in>*{opacity:1;transform:none}
-.motion .stagger.in>*:nth-child(2){transition-delay:.08s}.motion .stagger.in>*:nth-child(3){transition-delay:.16s}.motion .stagger.in>*:nth-child(4){transition-delay:.24s}
-
-/* ---------- responsivo ---------- */
-@media (max-width:1080px){
-  .values{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .bento .card:last-child{grid-column:1/-1}
-}
-@media (max-width:900px){
-  .nav{display:none}
-  .menu-btn{display:inline-flex}
-  .scene .wrap,.profile,.feature,.proposal,.method{grid-template-columns:minmax(0,1fr)}
-  .scene.flip .copy{order:0}
-  .scene .frame{order:-1;max-width:none}
-  .frame-clip{height:clamp(340px,92vw,560px)}
-  #inicio{padding-top:96px}
-  #inicio .frame-clip{height:clamp(260px,62vw,420px)}
-  #inicio .display{font-size:clamp(56px,17vw,96px)}
-  .portrait{position:relative;top:auto;max-width:520px}
-  .portrait img{height:clamp(420px,110vw,620px)}
-  .feature-media{height:clamp(300px,90vw,520px)}
-  .ghost{top:auto;bottom:4%;font-size:52vw}
-  .duo{grid-template-columns:minmax(0,1fr)}
-  .js .duo .side:not(.is-active){display:none}
-  .js .duo .side.is-active{transform:none}
-  .fields{grid-template-columns:minmax(0,1fr)}
-  .stack .card{top:calc(var(--hdr) + 24px + var(--i) * 14px)}
-}
-@media (max-width:640px){
-  body{font-size:16px}
-  .hdr{padding:8px 8px 8px 16px}
-  .brand{font-size:11px;letter-spacing:.06em}
-  .pipe{grid-template-columns:minmax(0,1fr)}
-  .parrow{transform:rotate(90deg);justify-self:center}
-  .pnode{min-height:70px}
-  .rail{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:26px}
-  .rail::before,.rail::after{display:none}
-  .bento,.values,.results{grid-template-columns:minmax(0,1fr)}
-  .msg{grid-template-columns:minmax(0,1fr);gap:8px}
-  .scene-foot{flex-wrap:wrap}
-  .seal{display:none}
-  .switch{display:flex;width:100%}.switch button{flex:1;padding:0 10px}
-  .corner{display:none}
-  .glow,.cursor{display:none}
-}
-
-/* ===== camada de impacto ===== */
-.intro-curtain{position:fixed;inset:0;z-index:300;display:grid;place-items:center;pointer-events:none}
-.intro-curtain .half{position:absolute;left:0;right:0;height:50.5%;background:#0b0907;transition:transform 1.1s cubic-bezier(.76,0,.24,1)}
-.intro-curtain .half.t{top:0}.intro-curtain .half.b{bottom:0}
-.intro-curtain .mark{position:relative;z-index:2;display:grid;justify-items:center;gap:18px;transition:opacity .4s,transform .6s var(--ease)}
-.intro-curtain .mark span{font:600 clamp(13px,1.6vw,16px)/1 var(--f-mono);letter-spacing:.3em;color:var(--ember-hot)}
-.intro-curtain .bar{width:min(260px,60vw);height:1px;background:var(--line-2);overflow:hidden}
-.intro-curtain .bar i{display:block;height:100%;background:var(--ember);transform-origin:0 50%;animation:barFill 1.15s var(--ease) forwards}
-@keyframes barFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.intro-curtain.open .half.t{transform:translateY(-101%)}
-.intro-curtain.open .half.b{transform:translateY(101%)}
-.intro-curtain.open .mark{opacity:0;transform:scale(.94)}
-.motion.is-intro #inicio .frame-clip{clip-path:inset(14% 10% 14% 10% round 6px)!important}
-.motion.is-intro #inicio .copy>*{opacity:0}
-#inicio .copy>*{transition:opacity .8s var(--ease)}
-.field{position:absolute;inset:0;z-index:-2;width:100%;height:100%;pointer-events:none;opacity:.9}
-.frame-clip::before{content:"";position:absolute;left:0;right:0;top:-30%;height:28%;z-index:2;pointer-events:none;opacity:0;
-  background:linear-gradient(180deg,transparent,rgba(255,150,70,.0) 20%,rgba(255,150,70,.35) 50%,rgba(255,220,180,.6) 52%,transparent);mix-blend-mode:screen}
-.motion .frame.in .frame-clip::before{animation:sweep 1.9s .35s cubic-bezier(.5,0,.3,1) both}
-@keyframes sweep{0%{top:-30%;opacity:1}85%{opacity:1}100%{top:110%;opacity:0}}
-.frame:hover .frame-clip img{filter:brightness(1.08) contrast(1.05)}
-.frame-clip img{transition:filter .6s}
-.next{animation:nudge 2.2s var(--ease) infinite}
-@keyframes nudge{0%,100%{transform:none}50%{transform:translateY(5px)}}
-.motion [data-words] .w{opacity:.38}
-
-/* ===================================================================
-   v2 · direção de arte: abertura cinematográfica, capítulos, RKOS, ATLAS
-   =================================================================== */
-@property --fy{syntax:'<length>';inherits:false;initial-value:0px}
-@property --hl{syntax:'<percentage>';inherits:false;initial-value:0%}
-
-/* ---------- abertura ---------- */
-#inicio.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-block:clamp(110px,13vh,160px) 120px}
-#inicio.hero .wrap.hero-grid{display:block;position:relative;z-index:4}
-.hero .copy{max-width:min(660px,50vw)}
-#inicio .hero-title{font-size:clamp(64px,9.2vw,170px);line-height:.84;letter-spacing:-.012em}
-.hero-title .line{display:block;overflow:hidden;padding:.16em 0 .05em;margin:-.13em 0 -.05em}
-.hero-title .word{display:inline-block}
-.hero-title em.word{color:var(--ember)}
-.hero-title .ch{display:inline-block;will-change:transform}
-.motion .hero-title .ch{transform:translate3d(0,112%,0) rotate(5deg);opacity:0}
-.motion .hero.is-live .hero-title .ch{transform:none;opacity:1;transition:transform 1.1s cubic-bezier(.16,1,.3,1),opacity .45s ease;transition-delay:calc(var(--i) * 26ms + 40ms)}
-.hero .lead{max-width:30em}
-.tag-quiet{border-color:var(--line-2);background:transparent;color:var(--muted)}
-
-.hero-aura{position:absolute;z-index:0;right:4%;top:6%;width:min(72vw,980px);aspect-ratio:1;border-radius:50%;pointer-events:none;
-  background:radial-gradient(closest-side,rgba(255,108,20,.30),rgba(255,90,10,.09) 46%,transparent 74%);animation:aura 8s ease-in-out infinite}
-@keyframes aura{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
-.hero-robot{position:absolute;z-index:1;top:0;bottom:0;right:0;width:min(62vw,1040px);margin:0;pointer-events:none;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%),linear-gradient(0deg,transparent 0,#000 26%);-webkit-mask-composite:source-in;
-  mask-image:linear-gradient(90deg,transparent 0,#000 34%),linear-gradient(0deg,transparent 0,#000 26%);mask-composite:intersect}
-.hero-robot-img{position:absolute;inset:-4% -2% -4% -2%;transform:translate3d(calc(var(--hx,0) * -20px),calc(var(--hy,0) * -14px),0);transition:transform 1.1s var(--ease)}
-.hero-robot-img img{width:100%;height:100%;object-fit:cover;object-position:50% 24%;transform:translate3d(0,var(--fy),0);animation:fy 9s ease-in-out infinite;filter:contrast(1.06) saturate(1.06)}
-@keyframes fy{0%,100%{--fy:0px}50%{--fy:-14px}}
-.hero-scan{position:absolute;left:0;right:0;top:-20%;height:18%;pointer-events:none;mix-blend-mode:screen;opacity:0;
-  background:linear-gradient(180deg,transparent,rgba(255,150,70,.18) 48%,rgba(255,220,180,.32) 50%,transparent)}
-.motion .hero.is-live .hero-scan{animation:heroScan 7s 1.2s cubic-bezier(.45,0,.25,1) infinite}
-@keyframes heroScan{0%{top:-20%;opacity:0}8%{opacity:1}55%{top:105%;opacity:.8}56%,100%{top:105%;opacity:0}}
-
-.embers{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-.embers i{position:absolute;bottom:-10px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:#ffb067;opacity:0;animation:ember var(--t) linear var(--d) infinite}
-@keyframes ember{0%{transform:translate3d(0,0,0);opacity:0}12%{opacity:var(--o)}80%{opacity:calc(var(--o) * .6)}100%{transform:translate3d(var(--dx),-82vh,0);opacity:0}}
-
-.hud{position:absolute;z-index:3;left:var(--ex,72%);top:var(--ey,30%);width:0;height:0;pointer-events:none;opacity:0;transition:opacity 1.2s ease .2s}
-.hero.is-live .hud{opacity:1}
-.hud-inner{position:absolute;left:0;top:0;transform:translate3d(calc(var(--hx,0) * -34px),calc(var(--hy,0) * -22px),0);transition:transform 1.1s var(--ease)}
-.ring{position:absolute;left:0;top:0;border-radius:50%;translate:-50% -50%}
-.ring.r1{width:96px;height:96px;background:conic-gradient(from 0deg,var(--ember) 0 46deg,transparent 46deg 176deg,rgba(255,176,103,.7) 176deg 196deg,transparent 196deg);
-  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));animation:spin 6s linear infinite}
-.ring.r2{width:178px;height:178px;border:1px dashed rgba(255,176,103,.4);animation:spin 26s linear infinite reverse}
-.ring.r3{width:290px;height:290px;background:repeating-conic-gradient(from 0deg,rgba(239,230,216,.42) 0 .6deg,transparent .6deg 7.5deg);
-  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));animation:spin 60s linear infinite;opacity:.55}
-@keyframes spin{to{transform:rotate(360deg)}}
-.reticle{position:absolute;left:-14px;top:-14px;width:28px;height:28px}
-.reticle::before,.reticle::after{content:"";position:absolute;background:rgba(255,190,130,.85)}
-.reticle::before{left:50%;top:0;bottom:0;width:1px}
-.reticle::after{top:50%;left:0;right:0;height:1px}
-.hud-tag{position:absolute;left:62px;top:-64px;white-space:nowrap;font:500 11px/1 var(--f-mono);letter-spacing:.16em;color:var(--ember-hot);padding:6px 9px;border:1px solid rgba(255,122,26,.4);border-radius:4px;background:rgba(11,9,7,.6)}
-
-.callouts{position:absolute;inset:0;z-index:3;list-style:none;margin:0;padding:0;pointer-events:none}
-.callout{position:absolute;left:var(--cx,-999px);top:var(--cy,-999px);display:flex;white-space:nowrap;align-items:center;gap:12px;opacity:0;transform:translate3d(-8px,-50%,0);transition:opacity .8s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--d) + 1s)}
-.callout::before{content:"";flex:none;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--ember);box-shadow:0 0 0 4px rgba(255,122,26,.18)}
-.callout .ln{flex:none;width:var(--lw,64px);height:1px;background:linear-gradient(90deg,var(--ember),rgba(255,122,26,.25));transform:scaleX(0);transform-origin:0 50%;transition:transform 1s var(--ease);transition-delay:calc(var(--d) + 1.1s)}
-.callout>span:last-child{font:500 12px/1.45 var(--f-mono);letter-spacing:.06em;color:#e8dccb;padding:8px 11px;border-radius:6px;background:rgba(11,9,7,.72);border:1px solid var(--line-2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.callout b{display:block;font-weight:600;letter-spacing:.14em;color:var(--ember-hot)}
-.hero.is-live .callout{opacity:1;transform:translate3d(0,-50%,0)}
-.callout.flip{flex-direction:row-reverse;transform:translate3d(calc(-100% + 8px),-50%,0)}
-.callout.flip::before{margin:0 -4.5px 0 0}
-.callout.flip .ln{transform-origin:100% 50%}
-.hero.is-live .callout.flip{transform:translate3d(calc(-100% + 4.5px),-50%,0)}
-.callout.off{display:none}
-.hero.is-live .callout .ln{transform:scaleX(1)}
-
-.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;gap:14px;min-height:54px;padding:0 24px;border-radius:999px;font:600 12px/1 var(--f-mono);letter-spacing:.14em;text-decoration:none;transition:color .4s var(--ease),border-color .4s;will-change:transform}
-.btn::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;transform:translate3d(0,101%,0);transition:transform .55s var(--ease)}
-.btn:hover::before,.btn:focus-visible::before{transform:none}
-.btn .arr{display:inline-block;transition:transform .4s var(--ease)}
-.btn:hover .arr{transform:translateX(4px)}
-.btn-primary{background:var(--ember);color:#160903}
-.btn-primary::before{background:#fff1e2}
-.btn-ghost{border:1px solid var(--line-2);color:var(--paper)}
-.btn-ghost::before{background:rgba(255,122,26,.16)}
-.btn-ghost:hover{border-color:var(--ember)}
-
-/* saída cinematográfica: --out (0→1) acompanha a rolagem da abertura */
-.hero-robot{transform:translate3d(0,calc(var(--out,0) * -70px),0) scale(calc(1 + var(--out,0) * .1));opacity:calc(1 - var(--out,0) * .75);transform-origin:70% 30%}
-.hero .hero-grid{transform:translate3d(0,calc(var(--out,0) * -110px),0);opacity:calc(1 - var(--out,0) * 1.1)}
-.hud{scale:calc(1 + var(--out,0) * .9)}
-.hero.is-live.settled .hud{opacity:calc(1 - var(--out,0) * 1.6);transition:none}
-.callouts{opacity:calc(1 - var(--out,0) * 2.4)}
-#inicio .hero-foot{position:absolute;left:0;right:0;bottom:26px;margin:0 auto;z-index:4}
-.scroll-cue{display:inline-flex;align-items:center;gap:14px;min-height:44px;font:500 12px/1 var(--f-mono);letter-spacing:.16em;color:var(--muted);text-decoration:none;transition:color .3s}
-.scroll-cue:hover{color:var(--paper)}
-.cue-line{position:relative;width:1px;height:44px;background:var(--line-2);overflow:hidden}
-.cue-line::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--ember);animation:cue 2.2s var(--ease) infinite}
-@keyframes cue{to{top:100%}}
-
-/* ---------- capítulos laterais ---------- */
-.chap{position:fixed;z-index:62;left:clamp(14px,1.4vw,24px);top:50%;transform:translateY(-50%);display:none}
-@media (min-width:1300px){.chap{display:block}}
-.chap-track{position:relative}
-.chap-track::before,.chap-fill{content:"";position:absolute;left:5px;top:8px;width:1px;bottom:8px;background:var(--line-2)}
-.chap-fill{bottom:auto;height:calc((100% - 16px) * var(--cp,0));background:linear-gradient(180deg,var(--ember-hot),var(--ember));transition:height .25s linear}
-.chap ol{list-style:none;margin:0;padding:0;display:grid;gap:16px}
-.chap a{position:relative;display:flex;align-items:center;gap:10px;min-height:20px;text-decoration:none}
-.chap .dot{position:relative;z-index:1;flex:none;width:11px;height:11px;border-radius:50%;border:1px solid var(--line-2);background:var(--ink);transition:background-color .35s,border-color .35s,transform .35s var(--ease)}
-.chap .n{font:500 11px/1 var(--f-mono);letter-spacing:.12em;color:rgba(168,155,140,.75);transition:color .3s}
-.chap .lbl{position:absolute;left:44px;white-space:nowrap;padding:6px 9px;border-radius:6px;border:1px solid var(--line);background:rgba(15,12,9,.9);font:500 11px/1 var(--f-mono);letter-spacing:.14em;color:var(--paper);opacity:0;transform:translateX(-6px);transition:opacity .25s,transform .3s var(--ease);pointer-events:none}
-.chap a:hover .lbl,.chap a:focus-visible .lbl{opacity:1;transform:none}
-.chap a.done .dot{border-color:rgba(255,122,26,.7)}
-.chap a[aria-current="true"] .dot{background:var(--ember);border-color:var(--ember);transform:scale(1.25)}
-.chap a[aria-current="true"] .n{color:var(--ember-hot)}
-
-/* menu com marcador deslizante */
-.nav{position:relative}
-.nav a{z-index:1}
-.nav-pill{position:absolute;z-index:0;top:0;bottom:0;left:0;width:0;border-radius:9px;background:rgba(239,230,216,.07);opacity:0;transition:transform .45s var(--ease),width .45s var(--ease),opacity .3s}
-.nav.has-pill .nav-pill{opacity:1}
-.nav a:hover{background:transparent}
-
-/* seletor com marcador deslizante */
-.js .switch{position:relative;display:inline-grid;grid-template-columns:1fr 1fr}
-.js .switch button{position:relative;z-index:1}
-.js .switch button[aria-pressed="true"]{background:transparent;color:#160903}
-.switch-thumb{display:none}
-.js .switch-thumb{display:block;position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:9px;background:var(--ember);transition:transform .5s var(--ease)}
-.js .switch[data-active="assisted"] .switch-thumb{transform:translateX(100%)}
-
-/* cenas: imagens com profundidade e marcação */
-.frame-clip img{transform:translate3d(0,calc(var(--py,0px) + var(--fy)),0) scale(1.08);animation:fy 10s ease-in-out infinite}
-.frame-tick{z-index:3}
-.frame-clip .frame-tick.tl{padding:6px 8px;border-radius:4px;background:rgba(11,9,7,.55)}
-.frame-hud{position:absolute;z-index:2;inset:12px;pointer-events:none;border:1px solid rgba(239,230,216,.08);border-radius:4px}
-.frame-hud::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,176,103,.22),transparent);transform:translateY(var(--sy,0));animation:hudLine 6s ease-in-out infinite}
-@keyframes hudLine{0%,100%{transform:translateY(-38vh)}50%{transform:translateY(38vh)}}
-
-/* ---------- simulação manual × assistido ---------- */
-.sim{margin-top:40px;padding:clamp(18px,2.6vw,30px);border-radius:20px;border:1px solid var(--line);background:linear-gradient(160deg,#18120e,#0d0a08)}
-.sim-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--line);font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.sim-replay,.kg-run{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--paper);font:500 12px/1 var(--f-mono);letter-spacing:.12em;cursor:pointer;transition:border-color .3s,background-color .3s}
-.sim-replay:hover,.kg-run:hover{border-color:var(--ember);background:rgba(255,122,26,.1)}
-.sim-row{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr) minmax(0,190px);align-items:center;gap:clamp(14px,2vw,28px);padding:22px 0;border-bottom:1px dashed var(--line)}
-.sim-row:last-of-type{border-bottom:0}
-.sim-lbl b{display:block;font:800 clamp(24px,2.4vw,32px)/1 var(--f-display);letter-spacing:.02em;color:var(--paper)}
-.sim-row.is-assisted .sim-lbl b{color:var(--ember-hot)}
-.sim-lbl small{display:block;margin-top:8px;font-size:14px;line-height:1.5;color:var(--muted)}
-.sim-grid{position:relative;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;overflow:hidden;padding:4px}
-.sim-grid .c{position:relative;aspect-ratio:3/4;border-radius:3px 7px 3px 3px;border:1px solid rgba(239,230,216,.2);background:rgba(239,230,216,.03);transition:border-color .35s,background-color .35s,transform .45s var(--ease)}
-.sim-grid .c::after{content:"";position:absolute;left:22%;right:22%;top:30%;height:2px;border-radius:2px;background:rgba(239,230,216,.18);box-shadow:0 6px 0 rgba(239,230,216,.14),0 12px 0 rgba(239,230,216,.1);transition:background-color .35s}
-.sim-grid .c.open{border-color:var(--ember-hot);background:rgba(255,122,26,.18);transform:translateY(-4px)}
-.sim-grid .c.done{border-color:rgba(143,227,181,.55);background:rgba(143,227,181,.08)}
-.sim-grid .c.done::after{background:rgba(143,227,181,.45)}
-.sim-grid .c.flag{border-color:var(--ember);background:rgba(255,122,26,.22)}
-.sim-grid .c.flag::before{content:"!";position:absolute;right:-5px;top:-7px;display:grid;place-items:center;width:15px;height:15px;border-radius:50%;background:var(--ember);color:#160903;font:700 10px/1 var(--f-mono)}
-.sim-sweep{position:absolute;z-index:2;top:0;bottom:0;left:-12%;width:10%;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,176,103,.35),transparent)}
-.sim-sweep.go{animation:simSweep 1.5s cubic-bezier(.5,0,.3,1) forwards}
-@keyframes simSweep{0%{left:-12%;opacity:1}90%{opacity:1}100%{left:104%;opacity:0}}
-.sim-state{font:500 12px/1.5 var(--f-mono);letter-spacing:.1em;color:var(--muted);text-align:right}
-.sim-state.ok{color:var(--signal)}
-.sim-state.busy{color:var(--ember-hot)}
-.sim-note{margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--muted)}
-
-/* ---------- RKOS · mapa de conhecimento ---------- */
-.kgraph{margin-top:40px;padding:clamp(18px,2.6vw,30px);border-radius:22px;border:1px solid var(--line);background:radial-gradient(70% 90% at 50% 45%,rgba(255,110,25,.10),transparent 70%),linear-gradient(160deg,#17120e,#0c0a08)}
-.kg-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line);font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.kg-tag,.pl-tag{color:var(--muted)}
-.kg-stage{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:clamp(28px,5vw,80px);padding:clamp(26px,3vw,40px) 0 8px}
-.kg-wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0}
-.kg-wires path{fill:none;stroke:rgba(255,140,60,.38);stroke-width:1.2}
-.kg-wires path.hot{stroke:var(--ember-hot);stroke-width:1.6}
-.kg-wires circle{fill:#ffd2a8}
-.kg-col{position:relative;z-index:1;display:flex;flex-direction:column;gap:10px;min-width:0}
-.kg-cap{font:500 11px/1.4 var(--f-mono);letter-spacing:.16em;color:var(--muted);margin-bottom:4px}
-.kg-doc{display:flex;align-items:center;gap:12px;min-height:46px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#120e0b;font:600 12px/1 var(--f-mono);letter-spacing:.14em;color:#e8dccb;transition:border-color .4s,background-color .4s,transform .5s var(--ease)}
-.kg-doc i{position:relative;flex:none;width:16px;height:20px;border-radius:2px 6px 2px 2px;border:1px solid rgba(239,230,216,.45)}
-.kg-doc i::after{content:"";position:absolute;left:3px;right:3px;top:6px;height:1px;background:rgba(239,230,216,.45);box-shadow:0 4px 0 rgba(239,230,216,.35),0 8px 0 rgba(239,230,216,.25)}
-.kg-doc.lit{border-color:rgba(255,122,26,.6);background:#1d130c}
-.kg-doc.pick{border-color:var(--ember);background:rgba(255,122,26,.18);transform:translateX(6px)}
-.kg-mid{align-items:center;text-align:center}
-.kg-core{position:relative;display:grid;place-items:center;align-content:center;gap:6px;width:clamp(170px,17vw,220px);aspect-ratio:1;border-radius:50%;border:1px solid rgba(255,122,26,.55);background:radial-gradient(circle,#2a170b,#110c09 70%);transition:box-shadow .5s,border-color .5s}
-.kg-core b{font:900 clamp(34px,3.4vw,46px)/1 var(--f-display);letter-spacing:.04em;color:var(--paper)}
-.kg-core small{font:500 10px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.kg-core.pulse{border-color:var(--ember-hot);box-shadow:0 0 0 10px rgba(255,122,26,.08),0 0 0 22px rgba(255,122,26,.04)}
-.kg-orbit{position:absolute;inset:-14px;border-radius:50%;border:1px dashed rgba(255,176,103,.3);animation:spin 30s linear infinite}
-.kg-orbit.o2{inset:-30px;border:0;background:conic-gradient(from 0deg,transparent 0 80%,rgba(255,122,26,.55) 92%,transparent 100%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));animation:spin 7s linear infinite}
-.kg-cap-mid{margin-top:26px}
-.kg-q,.kg-a{padding:16px 18px;border-radius:12px;border:1px solid var(--line);background:#120e0b}
-.kg-q small,.kg-a small{display:block;font:500 11px/1.4 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot);margin-bottom:8px}
-.kg-q p{margin:0;font-size:16px;line-height:1.5;color:var(--paper);min-height:3em}
-.kg-a{opacity:.35;transition:opacity .6s,border-color .6s,transform .6s var(--ease)}
-.kg-a.show{opacity:1;border-color:rgba(255,122,26,.55);transform:translateY(-2px)}
-.kg-a p{margin:0;font-size:15px;line-height:1.55;color:#ddd2c2}
-.kg-src{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.kg-src span{padding:6px 9px;border-radius:999px;border:1px solid rgba(255,122,26,.4);font:500 11px/1 var(--f-mono);letter-spacing:.08em;color:#ffcfa6}
-.kg-run{align-self:flex-start;margin-top:4px}
-
-/* ---------- ATLAS · fluxo em cinco etapas ---------- */
-.pipeline{margin-top:40px;padding:clamp(18px,2.6vw,30px);border-radius:22px;border:1px solid rgba(255,140,60,.28);background:linear-gradient(160deg,#18120e,#0c0a08)}
-.pl-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line);font:500 12px/1.5 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.pl-body{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(20px,4vw,56px);padding-top:clamp(20px,2.6vw,32px)}
-.pl-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;align-content:start}
-.pl-steps button{position:relative;overflow:hidden;display:grid;grid-template-columns:36px minmax(0,1fr);column-gap:10px;width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(239,230,216,.02);color:inherit;text-align:left;cursor:pointer;transition:border-color .4s,background-color .4s}
-.pl-steps button:hover{border-color:var(--line-2)}
-.pl-n{grid-row:span 2;font:600 12px/1.6 var(--f-mono);color:var(--muted)}
-.pl-t{font:800 clamp(20px,1.8vw,24px)/1.1 var(--f-display);letter-spacing:.03em;color:#cfc4b5}
-.pl-d{font-size:14px;line-height:1.45;color:var(--muted)}
-.pl-bar{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ember);transform:scaleX(0);transform-origin:0 50%}
-.pl-steps button.past{border-color:rgba(255,122,26,.25)}
-.pl-steps button.past .pl-n{color:var(--ember)}
-.pl-steps button[aria-pressed="true"]{border-color:rgba(255,122,26,.7);background:linear-gradient(120deg,rgba(255,122,26,.14),rgba(255,122,26,.02))}
-.pl-steps button[aria-pressed="true"] .pl-n{color:var(--ember-hot)}
-.pl-steps button[aria-pressed="true"] .pl-t{color:var(--paper)}
-.pl-steps button[aria-pressed="true"] .pl-d{color:#ddd2c2}
-.pipeline.auto .pl-steps button[aria-pressed="true"] .pl-bar{animation:plBar var(--plt,3.2s) linear forwards}
-@keyframes plBar{to{transform:scaleX(1)}}
-.pl-stage{display:flex;flex-direction:column;gap:14px;min-width:0}
-.pl-doc{position:relative;overflow:hidden;padding:20px 20px 24px;border-radius:14px;border:1px solid var(--line-2);background:#efe6d8;color:#20170f;min-height:500px}
-.pl-doc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid rgba(32,23,15,.18);font:600 12px/1.4 var(--f-mono);letter-spacing:.08em;color:#4a3a2c}
-.pl-badge{padding:6px 9px;border-radius:999px;background:#20170f;color:#ffcfa6;font:600 11px/1 var(--f-mono);letter-spacing:.12em;white-space:nowrap;transition:background-color .4s,color .4s}
-.pipeline[data-stage="4"] .pl-badge{background:#1f6a45;color:#e9fff3}
-.pl-rows{margin:6px 0 0;display:grid}
-.pl-row{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;padding:11px 8px;border-bottom:1px dashed rgba(32,23,15,.16);border-radius:6px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .6s var(--ease),background-color .4s}
-.pl-row dt{font:600 11px/1.6 var(--f-mono);letter-spacing:.12em;color:#6b5848}
-.pl-row dd{margin:0;justify-self:start;font-size:15px;line-height:1.5;color:#20170f}
-.pipeline[data-stage] .pl-row{opacity:1;transform:none}
-.pipeline .pl-row:nth-child(2){transition-delay:.06s}.pipeline .pl-row:nth-child(3){transition-delay:.12s}.pipeline .pl-row:nth-child(4){transition-delay:.18s}.pipeline .pl-row:nth-child(5){transition-delay:.24s}.pipeline .pl-row:nth-child(6){transition-delay:.3s}
-.pl-scan{position:absolute;left:0;right:0;top:-30%;height:26%;pointer-events:none;opacity:0;background:linear-gradient(180deg,transparent,rgba(255,122,26,.18) 60%,rgba(255,122,26,.42) 62%,transparent 64%)}
-.pipeline[data-stage="1"] .pl-scan{animation:plScan 1.8s cubic-bezier(.5,0,.3,1) .2s both}
-@keyframes plScan{0%{top:-30%;opacity:1}100%{top:110%;opacity:1}}
-.pipeline[data-stage="1"] .pl-row dd,.pipeline[data-stage="2"] .pl-row dd,.pipeline[data-stage="3"] .pl-row dd,.pipeline[data-stage="4"] .pl-row dd{background:linear-gradient(rgba(255,176,103,.5),rgba(255,176,103,.5)) no-repeat 0 1.02em/var(--hl,0%) .36em;animation:hl .9s var(--ease) both}
-@keyframes hl{from{--hl:0%}to{--hl:100%}}
-.pl-flag{display:block;width:max-content;max-width:100%;margin-top:6px;padding:4px 8px;border-radius:5px;background:#ff7a1a;color:#160903;font:600 11px/1.3 var(--f-mono);font-style:normal;letter-spacing:.06em;opacity:0;transform:translateX(-8px);transition:opacity .5s,transform .5s var(--ease)}
-.pipeline.s2 .pl-row.flag{background:rgba(255,122,26,.12)}
-.pipeline.s2 .pl-flag{opacity:1;transform:none}
-.pl-reco{position:absolute;left:16px;right:16px;bottom:16px;padding:16px 18px;border-radius:12px;background:#1a120c;color:#efe6d8;border:1px solid rgba(255,122,26,.55);box-shadow:0 20px 50px rgba(32,23,15,.35);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .7s var(--ease)}
-.pl-reco small{display:block;font:600 11px/1.4 var(--f-mono);letter-spacing:.14em;color:var(--ember-hot)}
-.pl-reco p{margin:6px 0 8px;font-size:15px;line-height:1.5}
-.pl-reco span{font:500 11px/1.4 var(--f-mono);letter-spacing:.08em;color:var(--muted)}
-.pipeline.s3 .pl-reco{opacity:1;transform:none}
-.pl-stamp{position:absolute;right:18px;bottom:150px;display:grid;justify-items:center;gap:2px;padding:12px 16px;border:2px solid #145a37;border-radius:10px;color:#145a37;background:#f7f0e4;transform:rotate(-8deg) scale(1.6);opacity:0;transition:opacity .35s,transform .55s cubic-bezier(.2,1.6,.4,1)}
-.pl-stamp span{font:700 22px/1 var(--f-body)}
-.pl-stamp b{font:900 21px/1 var(--f-display);letter-spacing:.06em;color:#145a37}
-.pl-stamp small{font:600 10px/1.2 var(--f-mono);letter-spacing:.14em}
-.pipeline.s4 .pl-stamp{opacity:1;transform:rotate(-8deg) scale(1)}
-.pl-caption{margin:0;min-height:3em;font-size:16px;line-height:1.5;color:#ddd2c2}
-.pl-note{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:13px;line-height:1.55;color:var(--muted)}
-
-/* ---------- responsivo v2 ---------- */
-@media (max-width:1100px){
-  .callouts{display:none}
-  .sim-row{grid-template-columns:minmax(0,1fr);gap:12px}
-  .sim-state{text-align:left}
-}
-@media (max-width:900px){
-  #inicio.hero{justify-content:flex-end;min-height:100svh;padding-top:0;padding-bottom:110px}
-  .hero .copy{max-width:none}
-  .hero-robot{bottom:auto;height:66svh;width:100%;
-    -webkit-mask-image:linear-gradient(180deg,#000 46%,transparent 96%);mask-image:linear-gradient(180deg,#000 46%,transparent 96%);-webkit-mask-composite:source-over;mask-composite:add}
-  #inicio.hero .wrap.hero-grid::before{content:"";position:absolute;z-index:-1;inset:-90px 0 -40px;pointer-events:none;background:linear-gradient(180deg,rgba(11,9,7,0),rgba(11,9,7,.72) 34%,rgba(11,9,7,.94) 70%)}
-  .hero-robot-img img{object-position:62% 20%}
-  .hero-aura{right:-30%;top:0;width:130vw}
-  #inicio .hero-title{font-size:clamp(54px,18vw,104px)}
-  .hud-inner{scale:.72}
-  .ring.r3{display:none}
-  .hud-tag{left:44px;top:-50px}
-  .kg-stage{grid-template-columns:minmax(0,1fr);gap:34px}
-  .kg-docs{flex-direction:row;flex-wrap:wrap}
-  .kg-docs .kg-cap{flex-basis:100%}
-  .kg-doc{flex:1 1 140px}
-  .kg-doc.pick{transform:none}
-  .kg-mid{order:0}
-  .pl-body{grid-template-columns:minmax(0,1fr)}
-  .pl-steps{grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
-  .pl-steps button{grid-template-columns:minmax(0,1fr);row-gap:4px}
-  .pl-n{grid-row:auto}
-  .pl-steps li{scroll-snap-align:start}
-  .pl-steps button{height:100%}
-}
-@media (max-width:640px){
-  .sim-grid{grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
-  .pl-row{grid-template-columns:minmax(0,1fr);gap:2px}
-  .pl-doc{min-height:620px;padding:16px 14px 20px}
-  .pl-stamp{right:10px;bottom:170px;padding:8px 12px}
-  .pl-stamp b{font-size:16px}
-  .hero-cta .btn{flex:1 1 auto;justify-content:space-between}
-  #inicio .hero-foot .seal{display:none}
-}
-
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .intro-curtain,.field{display:none!important}
-  *,*::before,*::after{animation:none!important;transition:none!important}
-  .frame-clip img,.feature-media img{transform:none!important}
-  .glow,.cursor{display:none}
-}
-</style>
-
-<div class="intro-curtain" id="intro" aria-hidden="true" hidden><div class="half t"></div><div class="half b"></div><div class="mark"><span id="introMark">R / LOGÍSTICA · PRODEPA</span><div class="bar"><i></i></div></div></div>
+<link rel="stylesheet" href="css/site.css">
 </head>
 <body>
 <a class="skip-link" href="#inicio">Ir para o conteúdo</a>
-<div class="progress" id="progress" aria-hidden="true"></div>
-<div class="glow" id="glow" aria-hidden="true"></div>
+<div class="ambient" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
-<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
 <header class="hdr" id="hdr">
   <a class="brand" href="#inicio">R / LOGÍSTICA · PRODEPA</a>
   <nav class="nav" aria-label="Navegação principal">
     <span class="nav-pill" aria-hidden="true"></span>
-    <a href="#inicio">INÍCIO</a><a href="#profissional">RAFAEL</a><a href="#drive">AUTOMAÇÃO</a><a href="#rkos">RKOS</a><a href="#atlas">ATLAS</a>
+    <a href="#inicio">INÍCIO</a><a href="#profissional">RAFAEL</a><a href="#desafio">AUTOMAÇÃO</a><a href="#rkos">RKOS</a><a href="#atlas">ATLAS</a><a href="#resultado">PROPOSTA</a>
   </nav>
   <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mnav"><i></i>MENU</button>
 </header>
+
 <nav class="chap" id="chap" aria-label="Capítulos">
-  <div class="chap-track"><span class="chap-fill" id="chapFill"></span>
+  <div class="chap-track"><span class="chap-fill"></span>
   <ol>
     <li><a href="#inicio" data-chap="inicio"><span class="dot"></span><span class="n">01</span><span class="lbl">IDENTIDADE</span></a></li>
     <li><a href="#profissional" data-chap="profissional"><span class="dot"></span><span class="n">02</span><span class="lbl">RAFAEL</span></a></li>
     <li><a href="#desafio" data-chap="desafio"><span class="dot"></span><span class="n">03</span><span class="lbl">CENÁRIO</span></a></li>
-    <li><a href="#drive" data-chap="drive"><span class="dot"></span><span class="n">04</span><span class="lbl">AUTOMAÇÃO</span></a></li>
+    <li><a href="#drive" data-chap="drive"><span class="dot"></span><span class="n">04</span><span class="lbl">ROTINA</span></a></li>
     <li><a href="#rkos" data-chap="rkos"><span class="dot"></span><span class="n">05</span><span class="lbl">RKOS</span></a></li>
     <li><a href="#atlas" data-chap="atlas"><span class="dot"></span><span class="n">06</span><span class="lbl">ATLAS</span></a></li>
-    <li><a href="#resultado" data-chap="resultado"><span class="dot"></span><span class="n">07</span><span class="lbl">VISÃO EXECUTIVA</span></a></li>
+    <li><a href="#resultado" data-chap="resultado"><span class="dot"></span><span class="n">07</span><span class="lbl">PROPOSTA</span></a></li>
   </ol></div>
 </nav>
 <nav class="mnav" id="mnav" aria-label="Menu" hidden>
-  <a href="#inicio"><small>01</small>INÍCIO</a><a href="#profissional"><small>02</small>RAFAEL</a><a href="#drive"><small>03</small>AUTOMAÇÃO</a><a href="#rkos"><small>04</small>RKOS</a><a href="#atlas"><small>05</small>ATLAS</a>
+  <a href="#inicio"><small>01</small>INÍCIO</a><a href="#profissional"><small>02</small>RAFAEL</a><a href="#desafio"><small>03</small>AUTOMAÇÃO</a><a href="#rkos"><small>05</small>RKOS</a><a href="#atlas"><small>06</small>ATLAS</a><a href="#resultado"><small>07</small>PROPOSTA</a>
 </nav>
 
 <main>
 
-<!-- 01 · IDENTIDADE -->
-<section class="scene hero" id="inicio">
-  <canvas class="field" id="field" aria-hidden="true"></canvas>
-  <div class="hero-aura" aria-hidden="true"></div>
-  <figure class="hero-robot" id="heroRobot" aria-hidden="true">
-    <div class="hero-robot-img"><img src="img/01-abertura.webp" alt="" id="heroImg" fetchpriority="high"></div>
-    <span class="hero-scan"></span>
+<!-- 01 · ABERTURA -->
+<section class="hero" id="inicio">
+  <figure class="hero-robot" aria-hidden="true">
+    <div class="hero-robot-img"><img src="img/01-abertura.webp" alt="" id="heroImg" fetchpriority="high" width="864" height="1536"></div>
   </figure>
-  <div class="embers" id="embers" aria-hidden="true"></div>
-  <div class="hud" id="hud" aria-hidden="true"><div class="hud-inner">
-    <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span><span class="reticle"></span>
-  </div></div>
-  <ul class="callouts" id="callouts" aria-hidden="true">
-    <li class="callout" data-anchor="0.62,0.26" style="--d:0s"><span class="ln"></span><span><b>01 · LEITURA</b>Documentos e planilhas</span></li>
-    <li class="callout" data-anchor="0.79,0.40" style="--d:.18s"><span class="ln"></span><span><b>02 · CONFERÊNCIA</b>Regras e cruzamentos</span></li>
-    <li class="callout" data-anchor="0.36,0.46" style="--d:.36s"><span class="ln"></span><span><b>03 · DECISÃO</b>Validação humana</span></li>
+  <div class="hud" id="hud" aria-hidden="true"><div class="hud-inner"><span class="ring r1"></span><span class="ring r2"></span><span class="reticle"></span></div></div>
+  <ul class="callouts" aria-hidden="true">
+    <li class="callout" data-anchor="0.62,0.26" style="--d:0"><span class="ln"></span><span><b>01 · LEITURA</b>Documentos e planilhas</span></li>
+    <li class="callout" data-anchor="0.79,0.40" style="--d:1"><span class="ln"></span><span><b>02 · CONFERÊNCIA</b>Regras e cruzamentos</span></li>
+    <li class="callout" data-anchor="0.36,0.46" style="--d:2"><span class="ln"></span><span><b>03 · DECISÃO</b>Validação humana</span></li>
   </ul>
   <div class="wrap hero-grid">
-    <div class="copy">
-      <p class="eyebrow" data-decode="700">01 / IDENTIDADE</p>
-      <h1 class="display hero-title" id="heroTitle" aria-label="Logística inteligente."><span class="line"><span class="word">LOGÍSTICA</span></span><span class="line"><em class="word">INTELIGENTE.</em></span></h1>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>Tecnologia aplicada à realidade da Logística da PRODEPA. Processos, documentos e informação trabalhando a favor das pessoas.</p>
-      <div class="tags" data-reveal><span class="tag">RAFAEL RODRIGUES</span><span class="tag tag-quiet">RKOS · ATLAS</span></div>
-      <p class="small" data-reveal>Desenvolvimento de soluções e automação para apoiar o trabalho da equipe.</p>
-      <div class="hero-cta" data-reveal>
-        <a class="btn btn-primary magnetic" href="#profissional"><span>CONHECER O TRABALHO</span><span class="arr" aria-hidden="true">→</span></a>
+    <div class="hero-copy">
+      <p class="eyebrow" data-r>01 / IDENTIDADE</p>
+      <h1 class="hero-title" data-split>LOGÍSTICA<br><em>INTELIGENTE.</em></h1>
+      <p class="lead" data-r style="--s:2">Tecnologia aplicada à realidade da Logística da PRODEPA. Processos, documentos e informação trabalhando a favor das pessoas.</p>
+      <p class="hero-sign" data-r style="--s:3"><b>RAFAEL RODRIGUES</b><span>Desenvolvimento de soluções e automação para apoiar o trabalho da equipe.</span></p>
+      <div class="hero-cta" data-r style="--s:4">
+        <a class="btn btn-primary" href="#profissional"><span>CONHECER O TRABALHO</span><span class="arr" aria-hidden="true">→</span></a>
         <a class="btn btn-ghost" href="#atlas"><span>VER O ATLAS</span><span class="arr" aria-hidden="true">↘</span></a>
       </div>
     </div>
   </div>
-  <div class="wrap scene-foot hero-foot"><a class="scroll-cue" href="#profissional"><span class="cue-line" aria-hidden="true"></span>ROLE PARA EXPLORAR</a><span class="seal">SYSTEM / HUMAN-LED INTELLIGENCE</span><span class="count">01 / 07</span></div>
+  <div class="wrap hero-foot"><a class="scroll-cue" href="#profissional"><span class="cue-line" aria-hidden="true"></span>ROLE PARA EXPLORAR</a><span class="seal">SYSTEM / HUMAN-LED INTELLIGENCE</span><span class="count">01 / 07</span></div>
 </section>
 
-<!-- DOSSIÊ 01 · RAFAEL -->
-<section class="dossier" id="profissional">
-  <div class="wrap profile2">
-    <div class="kicker" data-decode="800">DOSSIÊ 01 / QUEM ESTÁ POR TRÁS DAS SOLUÇÕES</div>
-    <figure class="avatar" aria-label="Retrato profissional de Rafael Rodrigues" data-reveal>
-      <span class="avatar-ring" aria-hidden="true"></span>
-      <div class="avatar-clip"><img src="img/02-retrato.webp" alt="Rafael Rodrigues, de terno preto e braços cruzados" decoding="async"></div>
+<!-- 02 · RAFAEL -->
+<section class="chapter" id="profissional">
+  <div class="wrap profile">
+    <figure class="portrait" data-r>
+      <div class="portrait-clip"><img src="img/02-retrato.webp" alt="Rafael Rodrigues, de terno preto e braços cruzados" loading="lazy" decoding="async" width="709" height="1536"></div>
+      <figcaption>02 / QUEM ESTÁ POR TRÁS DAS SOLUÇÕES</figcaption>
     </figure>
-    <h2 class="name" data-decode="1000">RAFAEL RODRIGUES</h2>
-    <p class="role" data-reveal>BACKEND · DEVOPS · AUTOMAÇÃO · INTELIGÊNCIA APLICADA À GESTÃO</p>
-    <div class="bio">
-      <p data-reveal>Profissional de tecnologia em consolidação, com atuação em desenvolvimento Backend, DevOps, automação e observabilidade, além de conhecimentos em Platform Engineering e AIOps.</p>
-      <div class="tools-block" data-reveal>
+    <div class="profile-body">
+      <p class="eyebrow" data-r>DOSSIÊ 01 / RAFAEL</p>
+      <h2 class="name" data-split>RAFAEL<br>RODRIGUES</h2>
+      <p class="role" data-r>BACKEND · DEVOPS · AUTOMAÇÃO · INTELIGÊNCIA APLICADA À GESTÃO</p>
+      <div class="bio">
+        <p data-r>Profissional de tecnologia em consolidação, com atuação em desenvolvimento Backend, DevOps, automação e observabilidade, além de conhecimentos em Platform Engineering e AIOps.</p>
+        <p data-r>Criador do <strong>RKOS</strong> e do <strong>Atlas</strong>, soluções operacionais que aplicam organização do conhecimento, inteligência artificial e automação às demandas administrativas.</p>
+        <p data-r>Na Logística da PRODEPA, transforma sua experiência técnica em melhorias práticas para contratos, documentos, planilhas e fluxos de trabalho.</p>
+      </div>
+      <div class="tools-block" data-r>
         <span class="k">TRABALHA COM</span>
-        <ul class="tools stagger"><li>Python</li><li>APIs</li><li>SQL</li><li>Docker</li><li>Git</li><li>Kubernetes</li><li>Prometheus</li><li>Grafana</li></ul>
+        <ul class="tools"><li>Python</li><li>APIs</li><li>SQL</li><li>Docker</li><li>Git</li><li>Kubernetes</li><li>Prometheus</li><li>Grafana</li></ul>
         <p>Adotando métodos de validação, monitoramento, versionamento e documentação técnica.</p>
       </div>
-      <p data-reveal>Criador do <strong>RKOS</strong> e do <strong>Atlas</strong>, soluções operacionais que aplicam organização do conhecimento, inteligência artificial e automação às demandas administrativas.</p>
-      <p data-reveal>Na Logística da PRODEPA, transforma sua experiência técnica em melhorias práticas para contratos, documentos, planilhas e fluxos de trabalho.</p>
+      <blockquote class="quote" data-r><span class="k">SEU DIFERENCIAL</span><p>Não desenvolve apenas código. Estrutura ambientes, automatiza processos, valida resultados e constrói soluções com foco em <em>confiabilidade, rastreabilidade e continuidade.</em></p></blockquote>
+      <a class="link-gh" href="https://github.com/rafael-backend-lab" target="_blank" rel="noopener" data-r><span>GITHUB / PORTFÓLIO TÉCNICO</span><b>github.com/rafael-backend-lab</b><i aria-hidden="true">↗</i></a>
     </div>
-    <div class="diff" data-reveal>
-      <span class="k">SEU DIFERENCIAL</span>
-      <p data-words>Não desenvolve apenas código. Estrutura ambientes, automatiza processos, valida resultados e constrói soluções com foco em <em>confiabilidade, rastreabilidade e continuidade.</em></p>
-    </div>
-    <a class="gh magnetic" href="https://github.com/rafael-backend-lab" target="_blank" rel="noopener" data-reveal>
-      <span class="gh-k">GITHUB / PORTFÓLIO TÉCNICO</span>
-      <span class="gh-url">github.com/rafael-backend-lab <i aria-hidden="true">↗</i></span>
-    </a>
-    <div class="bento howto stagger">
-      <div class="card spot"><span class="num">01 / OBSERVAR</span><strong>Conhecer a rotina</strong><p>Entender como a equipe consulta contratos, confere planilhas, acompanha vigências, identifica fornecedores e responde às demandas.</p></div>
-      <div class="card spot"><span class="num">02 / DESENVOLVER</span><strong>Resolver gargalos</strong><p>Organizar dados, criar automações, estruturar conferências e reduzir etapas manuais repetitivas, respeitando os procedimentos do setor.</p></div>
-      <div class="card spot"><span class="num">03 / COMPARTILHAR</span><strong>Fortalecer a equipe</strong><p>Transformar conhecimento individual em fluxos documentados, informações mais acessíveis e apoio prático ao trabalho dos colegas.</p></div>
-    </div>
-    <p class="closing" data-words>Não se trata de colocar tecnologia por aparência. Trata-se de <em>usar tecnologia para fazer a Logística trabalhar melhor.</em></p>
+  </div>
+  <div class="wrap">
+    <ol class="method3" data-line>
+      <li data-r style="--s:0"><span class="m-n">01</span><b>Observar</b><span class="m-k">Conhecer a rotina</span><p>Entender como a equipe consulta contratos, confere planilhas, acompanha vigências, identifica fornecedores e responde às demandas.</p></li>
+      <li data-r style="--s:1"><span class="m-n">02</span><b>Desenvolver</b><span class="m-k">Resolver gargalos</span><p>Organizar dados, criar automações, estruturar conferências e reduzir etapas manuais repetitivas, respeitando os procedimentos do setor.</p></li>
+      <li data-r style="--s:2"><span class="m-n">03</span><b>Compartilhar</b><span class="m-k">Fortalecer a equipe</span><p>Transformar conhecimento individual em fluxos documentados, informações mais acessíveis e apoio prático ao trabalho dos colegas.</p></li>
+    </ol>
+    <p class="statement" data-split>Não se trata de colocar tecnologia por aparência. Trata-se de <em>usar tecnologia para fazer a Logística trabalhar melhor.</em></p>
   </div>
 </section>
 
 <aside class="marquee" aria-label="Áreas de atuação">
-  <div class="mtrack" id="mtrack" aria-hidden="true">
+  <div class="mtrack" aria-hidden="true">
     <span>GESTÃO DOCUMENTAL</span><span>CONTRATOS</span><span>VIGÊNCIAS</span><span>RASTREABILIDADE</span><span>RKOS</span><span>ATLAS</span><span>VALIDAÇÃO HUMANA</span><span>LOGÍSTICA</span><span>GESTÃO DOCUMENTAL</span><span>CONTRATOS</span><span>VIGÊNCIAS</span><span>RASTREABILIDADE</span><span>RKOS</span><span>ATLAS</span><span>VALIDAÇÃO HUMANA</span><span>LOGÍSTICA</span>
   </div>
 </aside>
 
-<!-- 02 · CENÁRIO -->
+<!-- 03 · CENÁRIO -->
 <section class="scene flip" id="desafio">
-  <span class="ghost" data-ghost aria-hidden="true">02</span>
+  <span class="ghost" aria-hidden="true">03</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-decode="600">02 / O CENÁRIO</p>
-      <h2 class="title" data-decode="1100">ANTES, TUDO<br><em>DISPERSO.</em></h2>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>Planilhas, contratos, faturas, vigências e documentos exigem conferência cuidadosa. Quando a informação está espalhada, a equipe perde tempo procurando e comparando dados.</p>
-      <div class="tags" data-reveal><span class="tag">DESAFIO OPERACIONAL</span></div>
-      <p class="small" data-reveal>Reduzir tarefas repetitivas sem abrir mão da conferência humana.</p>
+      <p class="eyebrow" data-r>03 / O CENÁRIO</p>
+      <h2 class="title" data-split>ANTES, TUDO<br><em>DISPERSO.</em></h2>
+      <p class="lead" data-r>Planilhas, contratos, faturas, vigências e documentos exigem conferência cuidadosa. Quando a informação está espalhada, a equipe perde tempo procurando e comparando dados.</p>
+      <p class="small" data-r><span class="tag">DESAFIO OPERACIONAL</span> Reduzir tarefas repetitivas sem abrir mão da conferência humana.</p>
     </div>
-    <figure class="frame" data-tilt><span class="corner a"></span><span class="corner b"></span>
-      <div class="frame-clip"><img src="img/03-cenario.webp" alt="" data-parallax loading="lazy" decoding="async"></div>
+    <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
+      <div class="frame-clip"><img src="img/03-cenario.webp" alt="" loading="lazy" decoding="async" width="1015" height="1600"></div>
     </figure>
   </div>
-  <div class="wrap scene-foot"><a class="next" href="#drive">PRÓXIMA CENA ↓</a><span class="count">02 / 07</span></div>
 </section>
 
-<!-- DOSSIÊ 02 · ANTES E DEPOIS -->
-<section class="dossier" id="antes-depois">
+<!-- DOSSIÊ · TRANSFORMAÇÃO (caso do Drive) -->
+<section class="chapter" id="antes-depois">
   <div class="wrap">
-    <div class="kicker" data-decode="800">DOSSIÊ 02 / CASO PRÁTICO — GOOGLE DRIVE</div>
-    <h2 class="sub" data-reveal style="max-width:20ch">O MESMO TRABALHO. <em>DOIS JEITOS DE EXECUTAR.</em></h2>
-    <p class="intro" data-reveal>Caso real já executado: a equipe utilizou as soluções para conferir e atualizar informações em documentos e planilhas do Google Drive. A atividade foi demonstrada e testada na prática, com atualização efetiva dos arquivos.</p>
-    <div class="sim" data-sim data-reveal>
-      <div class="sim-head"><span>DOIS MÉTODOS · O MESMO CONJUNTO DE DOCUMENTOS</span><button class="sim-replay" type="button" data-sim-replay>REINICIAR ↺</button></div>
-      <div class="sim-row" data-lane="manual">
-        <div class="sim-lbl"><b>MANUAL</b><small>Um documento por vez: abrir, ler, conferir, registrar.</small></div>
-        <div class="sim-grid" data-grid></div>
-        <div class="sim-state" data-state aria-live="off">Aguardando</div>
+    <header class="dhead">
+      <p class="eyebrow" data-r>DOSSIÊ 02 / CASO PRÁTICO — GOOGLE DRIVE</p>
+      <div>
+        <h2 class="sub" data-split>O MESMO TRABALHO. <em>DOIS JEITOS DE EXECUTAR.</em></h2>
+        <p class="intro" data-r>Caso real já executado: a equipe utilizou as soluções para conferir e atualizar informações em documentos e planilhas do Google Drive. A atividade foi demonstrada e testada na prática, com atualização efetiva dos arquivos.</p>
       </div>
-      <div class="sim-row is-assisted" data-lane="assisted">
-        <div class="sim-lbl"><b>ASSISTIDO</b><small>Regras aplicadas ao conjunto; exceções separadas para a equipe.</small></div>
-        <div class="sim-grid" data-grid><span class="sim-sweep" aria-hidden="true"></span></div>
-        <div class="sim-state" data-state aria-live="off">Aguardando</div>
+    </header>
+
+    <div class="xf" data-xf data-mode="manual" data-r>
+      <div class="xf-head">
+        <div class="seg" role="group" aria-label="Método exibido"><span class="seg-thumb" aria-hidden="true"></span>
+          <button type="button" data-xf-mode="manual" aria-pressed="true">Manual</button><button type="button" data-xf-mode="assisted" aria-pressed="false">Assistido</button>
+        </div>
+        <button class="ghost-btn" type="button" data-xf-play>REPRODUZIR ↺</button>
       </div>
-      <p class="sim-note">Animação ilustrativa da diferença de método. Não representa quantidades nem tempos medidos.</p>
+      <div class="xf-body">
+        <div class="xf-text">
+          <div class="xf-pane" data-pane="manual">
+            <span class="xf-k">ANTES / PROCESSO MANUAL</span>
+            <h3>Documento por documento</h3>
+            <ol class="xf-steps"><li>Abrir cada arquivo individualmente.</li><li>Localizar a informação necessária.</li><li>Conferir o conteúdo com a planilha ou referência.</li><li>Registrar a atualização e passar ao próximo.</li><li>Repetir as mesmas etapas dezenas de vezes.</li></ol>
+          </div>
+          <div class="xf-pane" data-pane="assisted">
+            <span class="xf-k">COM A AUTOMAÇÃO / APOIO AO SETOR</span>
+            <h3>Processamento organizado</h3>
+            <ol class="xf-steps"><li>Definir o conjunto de documentos e as regras de conferência.</li><li>Executar a rotina automatizada de leitura e atualização.</li><li>Consolidar o resultado em formato verificável.</li><li>Revisar exceções e pontos que exigem decisão humana.</li><li>Entregar à equipe a informação pronta para uso.</li></ol>
+          </div>
+        </div>
+        <div class="xf-stage" aria-hidden="true">
+          <div class="xf-track"><span data-t="0">ABRIR</span><span data-t="1">LER</span><span data-t="2">CONFERIR</span><span data-t="3">REGISTRAR</span></div>
+          <div class="xf-track xf-track-b"><span data-t="0">FONTES</span><span data-t="1">REGRAS</span><span data-t="2">PROCESSAMENTO</span><span data-t="3">REVISÃO</span></div>
+          <div class="xf-field">
+            <div class="xf-batch"><span>CONJUNTO DE DOCUMENTOS</span></div>
+            <div class="xf-tray"><span>REVISÃO HUMANA</span><i class="xf-person"></i></div>
+          </div>
+          <p class="xf-status" data-xf-status>As mesmas ações, repetidas a cada documento.</p>
+        </div>
+      </div>
+      <p class="note">Animação ilustrativa da diferença de método. Não representa quantidades nem tempos medidos.</p>
     </div>
-    <div data-compare>
-      <div class="switch" role="group" aria-label="Visualização da comparação"><span class="switch-thumb" aria-hidden="true"></span>
-        <button type="button" data-side="traditional" aria-pressed="true">Tradicional</button><button type="button" data-side="assisted" aria-pressed="false">Método assistido</button>
-      </div>
-      <div class="duo" aria-label="Comparação de processos: tradicional e método assistido">
-        <article class="side spot is-active" data-pane="traditional">
-          <span class="state">ANTES / PROCESSO MANUAL</span>
-          <h3>Documento por documento</h3>
-          <ol class="steps"><li>Abrir cada arquivo individualmente.</li><li>Localizar a informação necessária.</li><li>Conferir o conteúdo com a planilha ou referência.</li><li>Registrar a atualização e passar ao próximo.</li><li>Repetir as mesmas etapas dezenas de vezes.</li></ol>
-          <div class="chips"><span>ABRIR</span><i>→</i><span>LER</span><i>→</i><span>CONFERIR</span><i>→</i><span>REPETIR</span></div>
-        </article>
-        <article class="side after spot" data-pane="assisted">
-          <span class="state">COM A AUTOMAÇÃO / APOIO AO SETOR</span>
-          <h3>Processamento organizado</h3>
-          <ol class="steps"><li>Definir o conjunto de documentos e as regras de conferência.</li><li>Executar a rotina automatizada de leitura e atualização.</li><li>Consolidar o resultado em formato verificável.</li><li>Revisar exceções e pontos que exigem decisão humana.</li><li>Entregar à equipe a informação pronta para uso.</li></ol>
-          <div class="chips"><span>FONTES</span><i>→</i><span>REGRAS</span><i>→</i><span>PROCESSAMENTO</span><i>→</i><span>REVISÃO</span></div>
-        </article>
-      </div>
-    </div>
-    <div class="evidence" data-reveal><b>Resultado relatado:</b> a atualização de documentos e planilhas que havia consumido dias de trabalho pelo procedimento manual foi concluída em minutos com o método assistido. Resultado já demonstrado e testado; os tempos exatos e o volume de arquivos não são apresentados como métricas auditadas.</div>
+
+    <p class="evidence" data-r><b>Resultado relatado:</b> a atualização de documentos e planilhas que havia consumido dias de trabalho pelo procedimento manual foi concluída em minutos com o método assistido. Resultado já demonstrado e testado; os tempos exatos e o volume de arquivos não são apresentados como métricas auditadas.</p>
   </div>
 </section>
 
-<!-- 03 · CASO REAL -->
+<!-- 04 · CASO REAL / ROTINA -->
 <section class="scene" id="drive">
-  <span class="ghost" data-ghost aria-hidden="true">03</span>
+  <span class="ghost" aria-hidden="true">04</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-decode="600">03 / CASO REAL</p>
-      <h2 class="title" data-decode="1100">DO MANUAL<br><em>AO FLUXO.</em></h2>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>O trabalho de conferência e atualização de informações do Drive, antes executado documento por documento, passou a contar com automação.</p>
-      <div class="tags" data-reveal><span class="tag">AUTOMAÇÃO DO DRIVE</span></div>
-      <p class="small" data-reveal>Uma melhoria concreta na rotina da Logística, com ganho de agilidade relatado na execução.</p>
-      <div class="panel" data-reveal>
-        <div class="panel-head">FLUXO DE INFORMAÇÕES // SOLUÇÕES JÁ TESTADAS</div>
-        <div class="pipe">
-          <div class="pnode"><strong>DOCUMENTOS</strong><span>Entrada de dados</span></div><div class="parrow" aria-hidden="true">➜</div>
-          <div class="pnode"><strong>CONFERÊNCIA</strong><span>Regras e cruzamentos</span></div><div class="parrow" aria-hidden="true">➜</div>
-          <div class="pnode"><strong>ATUALIZAÇÃO</strong><span>Resultado organizado</span></div>
-        </div>
-        <div class="stream" aria-hidden="true"><div class="wire"></div>
-          <div class="packet" style="--y:14%;--t:6s;--d:-1s">CONTRATO_015</div>
-          <div class="packet" style="--y:44%;--t:8s;--d:-4s">FORNECEDOR</div>
-          <div class="packet" style="--y:72%;--t:7s;--d:-2.5s">VIGÊNCIA</div>
-        </div>
-        <p class="caption">Representação visual do fluxo, sem conexão com dados institucionais reais.</p>
+      <p class="eyebrow" data-r>04 / CASO REAL</p>
+      <h2 class="title" data-split>DO MANUAL<br><em>AO FLUXO.</em></h2>
+      <p class="lead" data-r>O trabalho de conferência e atualização de informações do Drive, antes executado documento por documento, passou a contar com automação.</p>
+      <p class="small" data-r><span class="tag">AUTOMAÇÃO DO DRIVE</span> Uma melhoria concreta na rotina da Logística, com ganho de agilidade relatado na execução.</p>
+    </div>
+    <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
+      <div class="frame-clip"><img src="img/04-caso-real.webp" alt="" loading="lazy" decoding="async" width="1120" height="1443"></div>
+    </figure>
+  </div>
+</section>
+
+<section class="chapter" id="exemplos">
+  <div class="wrap">
+    <header class="dhead">
+      <p class="eyebrow" data-r>DOSSIÊ 03 / O QUE ISSO SIGNIFICA NO DIA A DIA</p>
+      <div>
+        <h2 class="sub" data-split>MENOS PROCURA. <em>MAIS RESPOSTAS.</em></h2>
+        <p class="intro" data-r>Para quem não trabalha com desenvolvimento de sistemas, a lógica é simples: a tecnologia ajuda a localizar, organizar e comparar informações. A análise e a responsabilidade pela decisão continuam com as pessoas.</p>
       </div>
-    </div>
-    <figure class="frame" data-tilt><span class="corner a"></span><span class="corner b"></span>
-      <div class="frame-clip"><img src="img/04-caso-real.webp" alt="" data-parallax loading="lazy" decoding="async"></div>
+    </header>
+    <figure class="feature" data-r>
+      <div class="feature-media"><img src="img/05-automacao-documental.webp" alt="Robô branco trabalhando em notebook com telas administrativas ao fundo" loading="lazy" decoding="async" width="864" height="1536"></div>
+      <figcaption class="feature-copy"><span class="k">AUTOMAÇÃO DOCUMENTAL</span><strong>Da conferência manual à informação organizada.</strong><p>A imagem representa o apoio tecnológico à conferência de documentos, planilhas, faturas e contratos. A análise e a validação permanecem com a equipe.</p></figcaption>
     </figure>
-  </div>
-  <div class="wrap scene-foot"><a class="next" href="#rotina">PRÓXIMA CENA ↓</a><span class="count">03 / 07</span></div>
-</section>
-
-<!-- DOSSIÊ 03 · EXEMPLOS -->
-<section class="dossier" id="exemplos">
-  <div class="wrap">
-    <div class="kicker" data-decode="800">DOSSIÊ 03 / O QUE ISSO SIGNIFICA NO DIA A DIA</div>
-    <h2 class="sub" data-reveal>MENOS PROCURA. <em>MAIS RESPOSTAS.</em></h2>
-    <p class="intro" data-words>Para quem não trabalha com desenvolvimento de sistemas, a lógica é simples: a tecnologia ajuda a localizar, organizar e comparar informações. A análise e a responsabilidade pela decisão continuam com as pessoas.</p>
-    <figure class="feature" data-reveal>
-      <div class="feature-media"><img src="img/05-automacao-documental.webp" alt="Robô branco trabalhando em notebook com telas administrativas ao fundo" data-parallax loading="lazy" decoding="async"></div>
-      <figcaption class="feature-copy"><span class="k">01 / AUTOMAÇÃO DOCUMENTAL</span><strong>DA CONFERÊNCIA MANUAL À INFORMAÇÃO ORGANIZADA.</strong><p>A imagem representa o apoio tecnológico à conferência de documentos, planilhas, faturas e contratos. A análise e a validação permanecem com a equipe.</p></figcaption>
-    </figure>
-    <div class="bento stagger">
-      <div class="card spot"><span class="num">CASO 01</span><strong>Faturas e fornecedores</strong><p>Uma demanda pede conferir números de faturas da Equatorial em uma planilha. A solução ajuda a estruturar os registros e sinalizar campos ausentes ou divergentes para revisão.</p></div>
-      <div class="card spot"><span class="num">CASO 02</span><strong>Contratos e vigências</strong><p>Ao consultar um contrato, a equipe precisa identificar fornecedor, número, período de vigência e informações correspondentes em outras fontes. O fluxo organiza esses pontos para facilitar a conferência.</p></div>
-      <div class="card spot"><span class="num">CASO 03</span><strong>Cláusulas e documentos</strong><p>Quando pedem as cláusulas 7.1 e 7.2 de um contrato, a ferramenta pode apoiar a localização e extração do texto original, preservando a necessidade de conferir com o documento-fonte.</p></div>
-    </div>
-    <div class="example" data-console>
-      <span class="k">EXEMPLO ILUSTRATIVO / SEM DADOS REAIS</span>
-      <p class="ask" data-type>Pedido: “Qual é a vigência do contrato 015 e qual fornecedor está vinculado a ele?”</p>
-      <p data-type><b>Sem apoio:</b> procurar o contrato, abrir o PDF, buscar o trecho, conferir a planilha e transcrever a resposta.</p>
-      <p data-type><b>Com apoio:</b> localizar os registros relacionados, apresentar os campos encontrados e indicar a origem para que a pessoa valide a informação antes de responder.</p>
-    </div>
+    <ol class="ledger" data-line>
+      <li data-r style="--s:0"><span class="lg-n">CASO 01</span><b>Faturas e fornecedores</b><p>Uma demanda pede conferir números de faturas da Equatorial em uma planilha. A solução ajuda a estruturar os registros e sinalizar campos ausentes ou divergentes para revisão.</p></li>
+      <li data-r style="--s:1"><span class="lg-n">CASO 02</span><b>Contratos e vigências</b><p>Ao consultar um contrato, a equipe precisa identificar fornecedor, número, período de vigência e informações correspondentes em outras fontes. O fluxo organiza esses pontos para facilitar a conferência.</p></li>
+      <li data-r style="--s:2"><span class="lg-n">CASO 03</span><b>Cláusulas e documentos</b><p>Quando pedem as cláusulas 7.1 e 7.2 de um contrato, a ferramenta pode apoiar a localização e extração do texto original, preservando a necessidade de conferir com o documento-fonte.</p></li>
+    </ol>
   </div>
 </section>
 
-<!-- 04 · ROTINA -->
 <section class="scene flip" id="rotina">
-  <span class="ghost" data-ghost aria-hidden="true">04</span>
+  <span class="ghost" aria-hidden="true">04</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-decode="600">04 / TRABALHO NA LOGÍSTICA</p>
-      <h2 class="title" data-decode="1100">DADOS QUE<br><em>SE CONECTAM.</em></h2>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>Conferência de fornecedores, contratos, números de faturas, vigências, cláusulas e planilhas. O objetivo é facilitar cruzamentos e tornar a informação mais acessível para a equipe.</p>
-      <div class="tags" data-reveal><span class="tag">DOCUMENTOS · PLANILHAS · FONTES</span></div>
-      <p class="small" data-reveal>Automação como apoio à análise administrativa, não como substituição da responsabilidade humana.</p>
+      <p class="eyebrow" data-r>04 / TRABALHO NA LOGÍSTICA</p>
+      <h2 class="title" data-split>DADOS QUE<br><em>SE CONECTAM.</em></h2>
+      <p class="lead" data-r>Conferência de fornecedores, contratos, números de faturas, vigências, cláusulas e planilhas. O objetivo é facilitar cruzamentos e tornar a informação mais acessível para a equipe.</p>
+      <p class="small" data-r><span class="tag">DOCUMENTOS · PLANILHAS · FONTES</span> Automação como apoio à análise administrativa, não como substituição da responsabilidade humana.</p>
     </div>
-    <figure class="frame" data-tilt><span class="corner a"></span><span class="corner b"></span>
-      <div class="frame-clip"><img src="img/06-rotina.webp" alt="" data-parallax loading="lazy" decoding="async"></div>
+    <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
+      <div class="frame-clip"><img src="img/06-rotina.webp" alt="" loading="lazy" decoding="async" width="984" height="1600"></div>
     </figure>
   </div>
-  <div class="wrap scene-foot"><a class="next" href="#rkos">PRÓXIMA CENA ↓</a><span class="count">04 / 07</span></div>
 </section>
 
 <!-- 05 · RKOS -->
 <section class="scene" id="rkos">
-  <span class="ghost" data-ghost aria-hidden="true">05</span>
+  <span class="ghost" aria-hidden="true">05</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-decode="600">05 / RKOS</p>
-      <h2 class="title" data-decode="1100">CONHECIMENTO<br><em>ORGANIZADO.</em></h2>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>O RKOS é a base para estruturar documentos, referências e procedimentos, preservando rastreabilidade e reduzindo a necessidade de redescobrir informações.</p>
-      <div class="tags" data-reveal><span class="tag">RKOS / ARQUITETURA DE CONHECIMENTO</span></div>
-      <p class="small" data-reveal>Organização, validação e recuperação de informações relevantes.</p>
-      <div class="status" role="note" aria-label="RKOS em pleno funcionamento" data-reveal><span class="led" aria-hidden="true"></span><strong>RKOS · OPERACIONAL</strong><span>Organização e inteligência documental em uso</span></div>
+      <p class="eyebrow" data-r>05 / RKOS</p>
+      <h2 class="title" data-split>CONHECIMENTO<br><em>ORGANIZADO.</em></h2>
+      <p class="lead" data-r>O RKOS é a base para estruturar documentos, referências e procedimentos, preservando rastreabilidade e reduzindo a necessidade de redescobrir informações.</p>
+      <p class="small" data-r><span class="tag">RKOS / ARQUITETURA DE CONHECIMENTO</span> Organização, validação e recuperação de informações relevantes.</p>
+      <div class="status" role="note" data-r><span class="led" aria-hidden="true"></span><strong>RKOS · OPERACIONAL</strong><span>Organização e inteligência documental em uso</span></div>
     </div>
-    <figure class="frame" data-tilt><span class="corner a"></span><span class="corner b"></span>
-      <div class="frame-clip"><img src="img/07-rkos.webp" alt="" data-parallax loading="lazy" decoding="async"></div>
+    <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
+      <div class="frame-clip"><img src="img/07-rkos.webp" alt="" loading="lazy" decoding="async" width="1120" height="1500"></div>
     </figure>
   </div>
-  <div class="wrap scene-foot"><a class="next" href="#atlas">PRÓXIMA CENA ↓</a><span class="count">05 / 07</span></div>
 </section>
 
-<!-- DOSSIÊ 04 · RKOS NA PRÁTICA -->
-<section class="dossier" id="rkos-na-pratica">
+<section class="chapter" id="rkos-na-pratica">
   <div class="wrap">
-    <div class="kicker" data-decode="800">DOSSIÊ 04 / RKOS EXPLICADO SEM JARGÃO</div>
-    <h2 class="sub" data-reveal style="max-width:18ch">QUANDO O CONHECIMENTO <em>DEIXA DE FICAR ESPALHADO.</em></h2>
-    <p class="intro" data-words>Pense no RKOS como uma forma organizada de trabalhar com documentos, orientações e histórico. Em vez de depender da memória de uma única pessoa ou procurar novamente a mesma informação, o conhecimento passa a ter estrutura, origem e critérios de consulta.</p>
-    <div class="kgraph" data-kgraph data-reveal role="group" aria-label="Mapa conceitual do RKOS: documentos organizados, índice e consulta com origem">
-      <div class="kg-head"><span>RKOS · MAPA DE CONHECIMENTO</span><span class="kg-tag">REPRESENTAÇÃO CONCEITUAL · SEM DADOS REAIS</span></div>
+    <header class="dhead">
+      <p class="eyebrow" data-r>DOSSIÊ 04 / RKOS EXPLICADO SEM JARGÃO</p>
+      <div>
+        <h2 class="sub" data-split>QUANDO O CONHECIMENTO <em>DEIXA DE FICAR ESPALHADO.</em></h2>
+        <p class="intro" data-r>Pense no RKOS como uma forma organizada de trabalhar com documentos, orientações e histórico. Em vez de depender da memória de uma única pessoa ou procurar novamente a mesma informação, o conhecimento passa a ter estrutura, origem e critérios de consulta.</p>
+      </div>
+    </header>
+
+    <div class="kgraph" data-kgraph data-r role="group" aria-label="Demonstração conceitual do RKOS: fontes, organização, consulta e resposta com origem">
+      <div class="kg-top">
+        <ol class="kg-phases" aria-label="Etapas"><li data-ph="0">FONTES</li><li data-ph="1">ORGANIZAÇÃO</li><li data-ph="2">CONSULTA</li><li data-ph="3">RESPOSTA FUNDAMENTADA</li></ol>
+        <span class="kg-tag">REPRESENTAÇÃO CONCEITUAL · SEM DADOS REAIS</span>
+      </div>
       <div class="kg-stage">
         <svg class="kg-wires" aria-hidden="true"></svg>
         <div class="kg-col kg-docs">
-          <span class="kg-cap">01 · FONTES AUTORIZADAS</span>
-          <div class="kg-doc" data-doc="contrato"><i aria-hidden="true"></i>CONTRATO</div>
-          <div class="kg-doc" data-doc="aditivo"><i aria-hidden="true"></i>ADITIVO</div>
-          <div class="kg-doc" data-doc="planilha"><i aria-hidden="true"></i>PLANILHA</div>
-          <div class="kg-doc" data-doc="portaria"><i aria-hidden="true"></i>PORTARIA</div>
-          <div class="kg-doc" data-doc="fatura"><i aria-hidden="true"></i>FATURA</div>
+          <span class="kg-cap">FONTES AUTORIZADAS</span>
+          <div class="kg-doc" data-doc="contrato"><i aria-hidden="true"></i><span>CONTRATO</span><em>CLÁUSULAS · VIGÊNCIA</em></div>
+          <div class="kg-doc" data-doc="aditivo"><i aria-hidden="true"></i><span>ADITIVO</span><em>VERSÃO · PRORROGAÇÃO</em></div>
+          <div class="kg-doc" data-doc="planilha"><i aria-hidden="true"></i><span>PLANILHA</span><em>CONTROLE · REGISTROS</em></div>
+          <div class="kg-doc" data-doc="portaria"><i aria-hidden="true"></i><span>PORTARIA</span><em>DESIGNAÇÃO · PROCESSO</em></div>
+          <div class="kg-doc" data-doc="fatura"><i aria-hidden="true"></i><span>FATURA</span><em>VALOR · COMPETÊNCIA</em></div>
         </div>
         <div class="kg-col kg-mid">
-          <div class="kg-core"><span class="kg-orbit" aria-hidden="true"></span><span class="kg-orbit o2" aria-hidden="true"></span><b>RKOS</b><small>ÍNDICE · CONTEXTO<br>VERSÕES · ORIGEM</small></div>
-          <span class="kg-cap kg-cap-mid">02 · ÍNDICE · 03 · EVIDÊNCIAS</span>
+          <div class="kg-core"><span class="kg-orbit" aria-hidden="true"></span><b>RKOS</b><small data-kg-state>ÍNDICE · CONTEXTO<br>VERSÕES · ORIGEM</small></div>
         </div>
         <div class="kg-col kg-out">
-          <span class="kg-cap">04 · CONSULTA</span>
-          <div class="kg-q"><small>PERGUNTA DE EXEMPLO</small><p data-kg-q>Qual é a vigência do contrato e onde isso está registrado?</p></div>
-          <div class="kg-a"><small>RESPOSTA COM ORIGEM</small><p>A informação é apresentada junto com o documento de onde veio, para a equipe conferir antes de responder.</p><div class="kg-src"><span>CONTRATO · VIGÊNCIA</span><span>ADITIVO · PRORROGAÇÃO</span></div></div>
-          <button class="kg-run" type="button" data-kg-run>SIMULAR CONSULTA <span aria-hidden="true">→</span></button>
+          <span class="kg-cap">ESCOLHA UMA PERGUNTA</span>
+          <div class="kg-qs" role="group" aria-label="Perguntas de exemplo">
+            <button type="button" class="kg-qbtn" data-q="0" aria-pressed="false">Qual é a vigência do contrato e onde isso está registrado?</button>
+            <button type="button" class="kg-qbtn" data-q="1" aria-pressed="false">Quem acompanha a fiscalização deste contrato?</button>
+            <button type="button" class="kg-qbtn" data-q="2" aria-pressed="false">A fatura confere com o que foi contratado?</button>
+          </div>
+          <div class="kg-a" aria-live="polite">
+            <small>RESPOSTA FUNDAMENTADA</small>
+            <p data-kg-answer>Escolha uma pergunta para ver como a informação é localizada e apresentada com a origem.</p>
+            <div class="kg-src" data-kg-src></div>
+            <span class="kg-check">Conferência humana antes de responder</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div data-compare>
-      <div class="switch" role="group" aria-label="Visualização da comparação"><span class="switch-thumb" aria-hidden="true"></span>
-        <button type="button" data-side="traditional" aria-pressed="true">Tradicional</button><button type="button" data-side="assisted" aria-pressed="false">Método assistido</button>
-      </div>
-      <div class="duo" aria-label="Comparação de processos: tradicional e método assistido">
-        <div class="side spot is-active" data-pane="traditional"><span class="state">SEM ORGANIZAÇÃO ESTRUTURADA</span><h3>O conhecimento se perde</h3>
-          <ol class="steps"><li>Uma informação fica em um arquivo isolado.</li><li>Outra pessoa não sabe onde procurar.</li><li>O mesmo documento é analisado novamente.</li><li>Versões diferentes podem gerar dúvidas.</li></ol></div>
-        <div class="side after spot" data-pane="assisted"><span class="state">COM A ABORDAGEM RKOS</span><h3>O conhecimento é recuperável</h3>
-          <ol class="steps"><li>Documentos são organizados por contexto.</li><li>Referências e versões podem ser identificadas.</li><li>Consultas são feitas com indicação de origem.</li><li>A equipe ganha uma base mais consistente para trabalhar.</li></ol></div>
+      <div class="kg-contrast">
+        <p><span>SEM ORGANIZAÇÃO ESTRUTURADA</span>A informação fica em arquivos isolados, o mesmo documento é analisado de novo e versões diferentes geram dúvidas.</p>
+        <p><span>COM A ABORDAGEM RKOS</span>Documentos organizados por contexto, versões identificáveis e consultas feitas com indicação de origem.</p>
       </div>
     </div>
-    <div class="evidence" data-reveal>O RKOS já está em pleno funcionamento como solução de organização e inteligência documental. Seu uso institucional, as permissões de acesso e eventuais integrações devem seguir as autorizações e regras da PRODEPA.</div>
-    <figure class="feature" data-reveal>
-      <div class="feature-media"><img src="img/08-rkos-conhecimento.webp" alt="Robô branco examinando painéis digitais com documentos e mapas de informação" data-parallax loading="lazy" decoding="async"></div>
-      <figcaption class="feature-copy"><span class="k">02 / RKOS · CONHECIMENTO</span><strong>DOCUMENTOS CONECTADOS. FONTES RASTREÁVEIS.</strong><p>Uma representação visual do RKOS em funcionamento, organizando e relacionando referências, versões e evidências documentais.</p></figcaption>
+
+    <p class="evidence" data-r>O RKOS já está em pleno funcionamento como solução de organização e inteligência documental. Seu uso institucional, as permissões de acesso e eventuais integrações devem seguir as autorizações e regras da PRODEPA.</p>
+    <figure class="feature rev" data-r>
+      <div class="feature-media"><img src="img/08-rkos-conhecimento.webp" alt="Robô branco examinando painéis digitais com documentos e mapas de informação" loading="lazy" decoding="async" width="864" height="1536"></div>
+      <figcaption class="feature-copy"><span class="k">RKOS · CONHECIMENTO</span><strong>Documentos conectados. Fontes rastreáveis.</strong><p>Uma representação visual do RKOS em funcionamento, organizando e relacionando referências, versões e evidências documentais.</p></figcaption>
     </figure>
   </div>
 </section>
 
 <!-- 06 · ATLAS -->
 <section class="scene flip" id="atlas">
-  <span class="ghost" data-ghost aria-hidden="true">06</span>
+  <span class="ghost" aria-hidden="true">06</span>
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow" data-decode="600">06 / ATLAS</p>
-      <h2 class="title" data-decode="1100">INTELIGÊNCIA<br><em>EM EVOLUÇÃO.</em></h2>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>O Atlas já está em pleno funcionamento dentro do Claude Code, utilizando Skills e ferramentas nativas para apoiar fluxos administrativos, análise documental e tarefas repetitivas, com validação e acompanhamento humano.</p>
-      <div class="tags" data-reveal><span class="tag">ATLAS / EM PLENO FUNCIONAMENTO</span></div>
-      <p class="small" data-reveal>Agente administrativo operacional no Claude Code, com execução assistida e revisão humana.</p>
-      <div class="status" role="note" aria-label="ATLAS em pleno funcionamento" data-reveal><span class="led" aria-hidden="true"></span><strong>ATLAS · OPERACIONAL</strong><span>Agente administrativo ativo no Claude Code</span></div>
+      <p class="eyebrow" data-r>06 / ATLAS</p>
+      <h2 class="title" data-split>INTELIGÊNCIA<br><em>EM EVOLUÇÃO.</em></h2>
+      <p class="lead" data-r>O Atlas já está em pleno funcionamento dentro do Claude Code, utilizando Skills e ferramentas nativas para apoiar fluxos administrativos, análise documental e tarefas repetitivas, com validação e acompanhamento humano.</p>
+      <p class="small" data-r><span class="tag">ATLAS / EM PLENO FUNCIONAMENTO</span> Agente administrativo operacional no Claude Code, com execução assistida e revisão humana.</p>
+      <div class="status" role="note" data-r><span class="led" aria-hidden="true"></span><strong>ATLAS · OPERACIONAL</strong><span>Agente administrativo ativo no Claude Code</span></div>
     </div>
-    <figure class="frame" data-tilt><span class="corner a"></span><span class="corner b"></span>
-      <div class="frame-clip"><img src="img/09-atlas.webp" alt="" data-parallax loading="lazy" decoding="async"></div>
+    <figure class="frame" data-r><span class="corner a"></span><span class="corner b"></span>
+      <div class="frame-clip"><img src="img/09-atlas.webp" alt="" loading="lazy" decoding="async" width="1105" height="1600"></div>
     </figure>
   </div>
-  <div class="wrap scene-foot"><a class="next" href="#resultado">PRÓXIMA CENA ↓</a><span class="count">06 / 07</span></div>
 </section>
 
-<!-- DOSSIÊ 05 · ATLAS NA PRÁTICA -->
-<section class="dossier" id="atlas-na-pratica">
+<section class="chapter" id="atlas-na-pratica">
   <div class="wrap">
-    <div class="kicker" data-decode="800">DOSSIÊ 05 / ATLAS — OPERAÇÃO EM USO</div>
-    <h2 class="sub" data-reveal style="max-width:20ch">UM ASSISTENTE PARA A ROTINA. <em>NÃO UM SUBSTITUTO DA EQUIPE.</em></h2>
-    <p class="intro" data-words>Seu uso já foi demonstrado e testado em rotinas de trabalho. Não é um sistema institucional independente.</p>
+    <header class="dhead">
+      <p class="eyebrow" data-r>DOSSIÊ 05 / ATLAS — OPERAÇÃO EM USO</p>
+      <div>
+        <h2 class="sub" data-split>UM ASSISTENTE PARA A ROTINA. <em>NÃO UM SUBSTITUTO DA EQUIPE.</em></h2>
+        <p class="intro" data-r>Seu uso já foi demonstrado e testado em rotinas de trabalho. Não é um sistema institucional independente.</p>
+      </div>
+    </header>
+
     <div class="pipeline" data-pipeline>
       <div class="pl-head"><span>ATLAS · FLUXO DE TRABALHO NO CLAUDE CODE</span><span class="pl-tag">DEMONSTRAÇÃO CONCEITUAL · DADOS FICTÍCIOS</span></div>
       <div class="pl-body">
         <ol class="pl-steps">
-          <li><button type="button" data-step="0" aria-pressed="true"><span class="pl-n">01</span><span class="pl-t">DOCUMENTO</span><span class="pl-d">Recebe o material autorizado e a orientação do setor.</span><i class="pl-bar" aria-hidden="true"></i></button></li>
-          <li><button type="button" data-step="1" aria-pressed="false"><span class="pl-n">02</span><span class="pl-t">ANÁLISE</span><span class="pl-d">Lê e organiza campos, datas e cláusulas.</span><i class="pl-bar" aria-hidden="true"></i></button></li>
-          <li><button type="button" data-step="2" aria-pressed="false"><span class="pl-n">03</span><span class="pl-t">PENDÊNCIAS</span><span class="pl-d">Sinaliza divergências e documentos ausentes.</span><i class="pl-bar" aria-hidden="true"></i></button></li>
-          <li><button type="button" data-step="3" aria-pressed="false"><span class="pl-n">04</span><span class="pl-t">RECOMENDAÇÃO</span><span class="pl-d">Propõe o encaminhamento, indicando as fontes.</span><i class="pl-bar" aria-hidden="true"></i></button></li>
-          <li><button type="button" data-step="4" aria-pressed="false"><span class="pl-n">05</span><span class="pl-t">VALIDAÇÃO HUMANA</span><span class="pl-d">A pessoa responsável confere e decide.</span><i class="pl-bar" aria-hidden="true"></i></button></li>
+          <li><button type="button" data-step="0" aria-pressed="true"><span class="pl-n">01</span><span class="pl-t">DOCUMENTO</span><span class="pl-d">Recebe o material autorizado e a orientação do setor.</span></button></li>
+          <li><button type="button" data-step="1" aria-pressed="false"><span class="pl-n">02</span><span class="pl-t">ANÁLISE</span><span class="pl-d">Lê e organiza campos, datas e cláusulas.</span></button></li>
+          <li><button type="button" data-step="2" aria-pressed="false"><span class="pl-n">03</span><span class="pl-t">PENDÊNCIAS</span><span class="pl-d">Sinaliza divergências e documentos ausentes.</span></button></li>
+          <li><button type="button" data-step="3" aria-pressed="false"><span class="pl-n">04</span><span class="pl-t">RECOMENDAÇÃO</span><span class="pl-d">Propõe o encaminhamento, indicando as fontes.</span></button></li>
+          <li><button type="button" data-step="4" aria-pressed="false"><span class="pl-n">05</span><span class="pl-t">VALIDAÇÃO HUMANA</span><span class="pl-d">A pessoa responsável confere e decide.</span></button></li>
         </ol>
         <div class="pl-stage">
+          <div class="pl-mnav">
+            <button type="button" class="pl-arrow" data-pl-prev aria-label="Etapa anterior">←</button>
+            <div class="pl-now"><span class="pl-count" data-pl-count>01 / 05</span><b data-pl-title>DOCUMENTO</b></div>
+            <button type="button" class="pl-arrow" data-pl-next aria-label="Próxima etapa">→</button>
+          </div>
           <div class="pl-doc">
             <div class="pl-doc-head"><span>CONTRATO DE EXEMPLO · Nº 000/0000</span><b class="pl-badge" data-badge>RECEBIDO</b></div>
             <span class="pl-scan" aria-hidden="true"></span>
@@ -1119,414 +385,77 @@ span.dw{display:inline-block!important;white-space:pre!important;vertical-align:
             <div class="pl-reco"><small>RECOMENDAÇÃO</small><p>Consultar o processo administrativo para confirmar o aditivo antes de responder.</p><span>FONTES: CLÁUSULA DE VIGÊNCIA · EXTRATO PUBLICADO</span></div>
             <div class="pl-stamp"><span aria-hidden="true">✓</span><b>CONFERIDO</b><small>PESSOA RESPONSÁVEL</small></div>
           </div>
-          <p class="pl-caption" data-caption aria-live="polite">O ATLAS recebe o documento autorizado e a orientação do setor.</p>
+          <div class="pl-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="pl-caption" data-caption aria-live="polite">O ATLAS recebe o documento autorizado e a orientação do setor sobre o que conferir.</p>
         </div>
       </div>
-      <p class="pl-note">Na prática, o ATLAS opera dentro do Claude Code, com Skills e ferramentas nativas. A decisão final é sempre de uma pessoa.</p>
+      <p class="note">Na prática, o ATLAS opera dentro do Claude Code, com Skills e ferramentas nativas. A decisão final é sempre de uma pessoa.</p>
     </div>
-    <div class="console" data-console data-msgs>
-      <div class="console-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>ATLAS · CLAUDE CODE</span><button class="replay" type="button" data-replay>REPETIR</button></div>
-      <div class="msgs">
-        <div class="msg"><span class="num">PEDIDO</span><div><strong data-type>“Compare estes documentos”</strong><p>O agente recebe arquivos autorizados e orientações claras sobre quais informações comparar.</p></div></div>
-        <div class="msg"><span class="num">PROCESSO</span><div><strong data-type>“Aponte as diferenças”</strong><p>Ele apoia a extração, a organização e a comparação de campos, cláusulas ou versões, registrando o que precisa de atenção.</p></div></div>
-        <div class="msg"><span class="num">ENTREGA</span><div><strong data-type>“Mostre o que revisar”</strong><p>Apresenta um resumo verificável, para que a pessoa responsável confira as fontes e tome a decisão.</p></div></div>
-      </div>
-    </div>
-    <div class="evidence" data-reveal>Fluxo de trabalho ilustrado com base em soluções operacionais já demonstradas e testadas. A ilustração não representa integração automática a sistemas institucionais.</div>
+
+    <p class="evidence" data-r>Fluxo de trabalho ilustrado com base em soluções operacionais já demonstradas e testadas. A ilustração não representa integração automática a sistemas institucionais.</p>
   </div>
 </section>
 
-<!-- DOSSIÊ 06 · VALOR -->
-<section class="dossier" id="valor">
+<!-- 07 · ENCERRAMENTO -->
+<section class="finale" id="resultado">
   <div class="wrap">
-    <div class="kicker" data-decode="800">DOSSIÊ 06 / POR QUE ESSE PROFISSIONAL IMPORTA</div>
-    <h2 class="sub" data-reveal style="max-width:18ch">O VALOR NÃO É SÓ PROGRAMAR. <em>É ENTENDER A LOGÍSTICA.</em></h2>
-    <p class="intro" data-words>Rafael reúne duas perspectivas que nem sempre estão na mesma pessoa: conhece as demandas reais da equipe e tem capacidade técnica para propor, construir e aperfeiçoar soluções. Essa proximidade encurta a distância entre o problema administrativo e a ferramenta que pode resolvê-lo.</p>
-    <div class="values stagger">
-      <div class="spot">Conhecimento do setor<small>Entende documentos, demandas e fluxos da rotina.</small></div>
-      <div class="spot">Capacidade de execução<small>Transforma problemas observados em melhorias práticas.</small></div>
-      <div class="spot">Continuidade<small>Pode evoluir soluções conforme surgem novas necessidades.</small></div>
-      <div class="spot">Benefício coletivo<small>Trabalha para facilitar a rotina da equipe, não apenas a própria.</small></div>
+    <p class="eyebrow" data-r>07 / VISÃO EXECUTIVA</p>
+    <h2 class="finale-title" data-split>MENOS ROTINA.<br><em>MAIS GESTÃO.</em></h2>
+    <div class="trail" data-trail aria-hidden="true">
+      <svg class="trail-svg" viewBox="0 0 1000 40" preserveAspectRatio="none"><path d="M0 20 H1000"/><path class="trail-on" d="M0 20 H1000"/></svg>
+      <ol><li>IDENTIDADE</li><li>RAFAEL</li><li>CENÁRIO</li><li>ROTINA</li><li>RKOS</li><li>ATLAS</li><li>PROPOSTA</li></ol>
     </div>
-    <p class="closing" data-words>A proposta à direção é simples: <em>aproveitar esse conhecimento aplicado</em>, acompanhar resultados reais e ampliar, com responsabilidade, as melhorias que já fazem sentido para a Logística.</p>
-  </div>
-</section>
+    <div class="finale-grid">
+      <div class="finale-lead">
+        <p class="lead" data-r>A proposta é ampliar o tempo disponível para análise, organização e atendimento às demandas da Logística, com ferramentas construídas a partir dos problemas reais do setor.</p>
+        <p class="verdict" data-r>Menos tempo procurando e transcrevendo informações. Mais tempo disponível para conferir, interpretar, corrigir e responder com segurança.</p>
+        <ul class="outcomes" data-r><li><b>Agilidade</b>Menos tempo gasto em tarefas repetitivas</li><li><b>Organização</b>Informações mais fáceis de localizar e conferir</li><li><b>Equipe</b>Mais capacidade para atender às demandas do setor</li></ul>
+      </div>
+      <div class="finale-why">
+        <span class="k" data-r>O QUE RAFAEL REÚNE</span>
+        <dl class="pillars" data-line>
+          <div data-r style="--s:0"><dt>Conhecimento do setor</dt><dd>Entende documentos, demandas e fluxos da rotina.</dd></div>
+          <div data-r style="--s:1"><dt>Capacidade de execução</dt><dd>Transforma problemas observados em melhorias práticas.</dd></div>
+          <div data-r style="--s:2"><dt>Continuidade</dt><dd>Pode evoluir soluções conforme surgem novas necessidades.</dd></div>
+          <div data-r style="--s:3"><dt>Benefício coletivo</dt><dd>Trabalha para facilitar a rotina da equipe, não apenas a própria.</dd></div>
+        </dl>
+      </div>
+    </div>
 
-<!-- 07 · VISÃO EXECUTIVA -->
-<section class="scene" id="resultado" style="padding-bottom:clamp(90px,10vw,150px)">
-  <span class="ghost" data-ghost aria-hidden="true">07</span>
-  <div class="wrap" style="display:block">
-    <div class="copy">
-      <p class="eyebrow" data-decode="600">07 / VISÃO EXECUTIVA</p>
-      <h2 class="title" data-decode="1100">MENOS ROTINA.<br><em>MAIS GESTÃO.</em></h2>
-      <div class="rule"></div>
-      <p class="lead" data-reveal>A proposta é ampliar o tempo disponível para análise, organização e atendimento às demandas da Logística, com ferramentas construídas a partir dos problemas reais do setor.</p>
-      <div class="tags" data-reveal><span class="tag">CONTINUIDADE E VALOR</span></div>
-      <p class="small" data-reveal>O diferencial está em conhecer o trabalho, identificar gargalos e transformar necessidades em soluções.</p>
-      <div class="results stagger">
-        <div class="result spot"><b data-decode="900">Agilidade</b><span>Menos tempo gasto em tarefas repetitivas</span></div>
-        <div class="result spot"><b data-decode="900">Organização</b><span>Informações mais fáceis de localizar e conferir</span></div>
-        <div class="result spot"><b data-decode="900">Equipe</b><span>Mais capacidade para atender às demandas do setor</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DEMONSTRAÇÃO -->
-<section class="dossier" id="demonstracao" aria-labelledby="demo-title">
-  <div class="wrap">
-    <p class="eyebrow" data-decode="700">DEMONSTRAÇÃO / ROTINA DA LOGÍSTICA</p>
-    <h2 class="title" id="demo-title" data-decode="1100">MESMA DEMANDA.<br><em>DOIS CAMINHOS.</em></h2>
-    <p class="intro" data-reveal>Uma solicitação chega à equipe: localizar o contrato, conferir fornecedor e vigência, cruzar a planilha e preparar uma resposta fundamentada. Veja o que muda <strong>quando a busca e a organização são apoiadas pelo método de trabalho de Rafael</strong>. A conferência final continua humana.</p>
-    <div class="casefile" aria-label="Exemplo de conferência de contrato" data-reveal>
-      <div class="casefile-index"><span>CASO DE USO · EXEMPLO ILUSTRATIVO</span><strong>CONFERÊNCIA DE CONTRATO</strong><small>Sem documentos internos ou dados reais</small></div>
-      <div class="fields stagger">
-        <div><small>01 · IDENTIFICAR</small><b>Contrato e fornecedor</b><p>Encontrar o instrumento correto e a empresa correspondente.</p></div>
-        <div><small>02 · VALIDAR</small><b>Vigência e versões</b><p>Conferir datas, aditivos e divergências entre fontes.</p></div>
-        <div><small>03 · ENTREGAR</small><b>Resumo com referências</b><p>Apontar evidências para a conferência final da equipe.</p></div>
-      </div>
-    </div>
-    <div class="bench-head"><div><span class="k">COMPARAÇÃO DO PROCESSO</span><h3>O que muda na prática</h3></div><span class="chip-pill">CENÁRIO ILUSTRATIVO</span></div>
-    <div data-compare>
-      <div class="switch" role="group" aria-label="Visualização da comparação"><span class="switch-thumb" aria-hidden="true"></span>
-        <button type="button" data-side="traditional" aria-pressed="true">Tradicional</button><button type="button" data-side="assisted" aria-pressed="false">Método assistido</button>
-      </div>
-      <div class="duo">
-        <article class="side track spot is-active" data-pane="traditional"><div class="top">ROTINA TRADICIONAL</div><p class="subtitle">BUSCA SEQUENCIAL · MAIS INTERVENÇÕES MANUAIS</p>
-          <ol class="steps"><li><span><strong>Localização:</strong> abrir pastas e arquivos, um a um, até encontrar o contrato correto.</span></li><li><span><strong>Conferência:</strong> procurar fornecedor, número e datas em documentos e planilhas.</span></li><li><span><strong>Cruzamento:</strong> comparar versões, anotar divergências e verificar as fontes.</span></li><li><span><strong>Entrega:</strong> montar o resumo e encaminhar para revisão responsável.</span></li></ol>
-          <p class="note">O tempo cresce com a quantidade de arquivos, fontes e versões que precisam ser conferidas.</p></article>
-        <article class="side track after spot" data-pane="assisted"><div class="top">COM O MÉTODO DE RAFAEL</div><p class="subtitle">BUSCA ESTRUTURADA · MAIS TEMPO PARA ANÁLISE</p>
-          <ol class="steps"><li><span><strong>Preparação:</strong> definir a demanda, organizar fontes autorizadas e critérios de busca.</span></li><li><span><strong>Localização assistida:</strong> pesquisar e relacionar campos de contratos, planilhas e referências.</span></li><li><span><strong>Conferência estruturada:</strong> sinalizar diferenças e registrar de onde veio cada informação.</span></li><li><span><strong>Entrega:</strong> produzir um resumo rastreável para revisão e decisão humana.</span></li></ol>
-          <p class="note">O esforço repetitivo pode diminuir; a responsabilidade pela validação permanece com a equipe.</p></article>
-      </div>
-    </div>
-    <div class="verdict" data-reveal><span>ONDE ESTÁ O GANHO</span><p>Menos tempo procurando e transcrevendo informações. Mais tempo disponível para conferir, interpretar, corrigir e responder com segurança.</p></div>
-    <div class="method" data-reveal>
-      <h3>O que Rafael efetivamente acrescenta ao processo?</h3>
+    <div class="proposal" id="proposta">
       <div>
-        <p><strong>Não é apertar um botão mágico.</strong> É compreender a rotina da Logística, organizar as fontes, estruturar critérios de conferência, automatizar buscas e cruzamentos possíveis, registrar a origem dos dados e entregar à equipe uma base mais clara para validar.</p>
-        <p class="disc">Comparação ilustrativa de etapas, sem dados institucionais ou tempos de produtividade inventados. A comprovação de ganho de tempo exige teste supervisionado com a mesma demanda.</p>
+        <p class="eyebrow" data-r>PROPOSTA À DIREÇÃO</p>
+        <h3 class="sub" data-split>POR QUE <em>MANTER ESSE CONHECIMENTO</em> NA LOGÍSTICA?</h3>
+        <p class="intro" data-r>Rafael não atua apenas escrevendo código. Ele acompanha as necessidades administrativas, entende onde o tempo da equipe é consumido e consegue traduzir esses problemas em processos mais organizados e ferramentas de apoio.</p>
+        <p data-r>O valor está na combinação de <strong>conhecimento da rotina, iniciativa técnica e continuidade das melhorias</strong> — com supervisão, segurança da informação e resultados que podem ser avaliados.</p>
+        <p data-r><strong>Não é apertar um botão mágico.</strong> É compreender a rotina da Logística, organizar as fontes, estruturar critérios de conferência, automatizar buscas e cruzamentos possíveis, registrar a origem dos dados e entregar à equipe uma base mais clara para validar.</p>
+        <p class="disc" data-r>A proposta à direção é simples: aproveitar esse conhecimento aplicado, acompanhar resultados reais e ampliar, com responsabilidade, as melhorias que já fazem sentido para a Logística. A comprovação de ganho de tempo exige teste supervisionado com a mesma demanda.</p>
       </div>
+      <ol class="facts" aria-label="O que já está em uso">
+        <li data-r style="--s:0"><span class="f-led" aria-hidden="true"></span><b>Já trabalhado na rotina</b><span>Planilhas, contratos, vigências, faturas e organização de informações da Logística.</span></li>
+        <li data-r style="--s:1"><span class="f-led" aria-hidden="true"></span><b>RKOS · Estrutura de conhecimento</b><span>Solução operacional de organização e recuperação de documentos e orientações, com foco em rastreabilidade.</span></li>
+        <li data-r style="--s:2"><span class="f-led" aria-hidden="true"></span><b>Atlas · Em pleno funcionamento</b><span>Agente administrativo operacional no Claude Code, que auxilia em análises e conferências sem substituir a responsabilidade dos servidores.</span></li>
+        <li data-r style="--s:3"><span class="f-led" aria-hidden="true"></span><b>Resultado já verificado na prática</b><span>Soluções já demonstradas e testadas: documentos e planilhas do Drive foram efetivamente atualizados, com redução relatada de dias para minutos. A próxima evolução é registrar formalmente os resultados para apresentação institucional.</span></li>
+      </ol>
     </div>
-  </div>
-</section>
 
-<!-- PROPOSTA -->
-<section class="dossier" id="proposta">
-  <div class="wrap proposal">
-    <div>
-      <p class="eyebrow" data-decode="700">PROPOSTA À DIREÇÃO</p>
-      <h2 class="sub" data-reveal>POR QUE <em>MANTER ESSE CONHECIMENTO</em> NA LOGÍSTICA?</h2>
-      <p class="intro" data-reveal>Rafael não atua apenas escrevendo código. Ele acompanha as necessidades administrativas, entende onde o tempo da equipe é consumido e consegue traduzir esses problemas em processos mais organizados e ferramentas de apoio.</p>
-      <p data-reveal>O valor está na combinação de <strong>conhecimento da rotina, iniciativa técnica e continuidade das melhorias</strong> — com supervisão, segurança da informação e resultados que podem ser avaliados.</p>
-      <a class="cta magnetic" href="#demonstracao">REVER DEMONSTRAÇÃO ↗</a>
-    </div>
-    <div class="facts stagger">
-      <div class="fact spot"><strong>Já trabalhado na rotina</strong><span>Planilhas, contratos, vigências, faturas e organização de informações da Logística.</span></div>
-      <div class="fact spot"><strong>RKOS · Estrutura de conhecimento</strong><span>Solução operacional de organização e recuperação de documentos e orientações, com foco em rastreabilidade.</span></div>
-      <div class="fact spot"><strong>Atlas · Em pleno funcionamento</strong><span>Agente administrativo operacional no Claude Code, que auxilia em análises e conferências sem substituir a responsabilidade dos servidores.</span></div>
-      <div class="fact spot"><strong>Resultado já verificado na prática</strong><span>Soluções já demonstradas e testadas: documentos e planilhas do Drive foram efetivamente atualizados, com redução relatada de dias para minutos. A próxima evolução é registrar formalmente os resultados para apresentação institucional.</span></div>
+    <div class="signature">
+      <p class="sig-name" data-split>RAFAEL RODRIGUES</p>
+      <p class="sig-role" data-r>LOGÍSTICA DA PRODEPA · RKOS · ATLAS</p>
+      <div class="sig-cta" data-r>
+        <a class="btn btn-primary" href="https://github.com/rafael-backend-lab" target="_blank" rel="noopener"><span>GITHUB / PORTFÓLIO TÉCNICO</span><span class="arr" aria-hidden="true">↗</span></a>
+        <a class="btn btn-ghost" href="#inicio"><span>VOLTAR AO INÍCIO</span><span class="arr" aria-hidden="true">↑</span></a>
+      </div>
     </div>
   </div>
 </section>
 
 </main>
 
-<footer class="footer"><div class="inner wrap"><strong>RAFAEL RODRIGUES</strong>LOGÍSTICA DA PRODEPA · RKOS · ATLAS<br><br>Apresentação de soluções operacionais e atividades já demonstradas e testadas, incluindo atualizações reais no Drive. Os elementos gráficos são ilustrativos e não representam integração a sistemas institucionais não comprovada.</div></footer>
+<footer class="footer"><div class="wrap">Apresentação de soluções operacionais e atividades já demonstradas e testadas, incluindo atualizações reais no Drive. Os elementos gráficos são ilustrativos e não representam integração a sistemas institucionais não comprovada.</div></footer>
 
-<script>
-(function(){
-'use strict';
-var root=document.documentElement;
-var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var fine=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-root.classList.add('js'); if(!reduce) root.classList.add('motion');
-function $$(s,c){return [].slice.call((c||document).querySelectorAll(s));}
-function clamp(v,a,b){return v<a?a:v>b?b:v;}
-
-/* ---- títulos que se organizam (disperso → organizado) ---- */
-var GLYPHS='ABCDEFGHIJKLNOPRSTUVXYZ0123456789';
-function decode(el){
-  if(reduce||el.getAttribute('data-done'))return;
-  el.setAttribute('data-done','1');
-  var dur=+el.getAttribute('data-decode')||900;
-  if(!el.hasAttribute('aria-label')&&/^H[1-6]$/.test(el.tagName))el.setAttribute('aria-label',el.textContent.replace(/\s+/g,' ').trim());
-  var original=el.innerHTML, texts=[], w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null), n;
-  while((n=w.nextNode())){ if(n.nodeValue.trim())texts.push(n); }
-  /* cada palavra vira uma caixa com a largura da palavra final: as quebras de linha não mudam */
-  var words=[];
-  texts.forEach(function(t){
-    var f=document.createDocumentFragment();
-    t.nodeValue.split(/(\s+)/).forEach(function(part){
-      if(!part)return;
-      if(/^\s+$/.test(part)){f.appendChild(document.createTextNode(part));return;}
-      var s=document.createElement('span'); s.className='dw'; s.textContent=part; f.appendChild(s); words.push({s:s,t:part});
-    });
-    t.parentNode.replaceChild(f,t);
-  });
-  words.forEach(function(o){o.w=o.s.getBoundingClientRect().width;});
-  words.forEach(function(o){o.s.style.width=o.w.toFixed(2)+'px';});
-  var total=words.reduce(function(a,o){return a+o.t.length;},0);
-  var t0=performance.now(); el.classList.add('decoding');
-  (function frame(now){
-    var p=clamp((now-t0)/dur,0,1), settled=Math.floor(Math.pow(p,.85)*total), k=0;
-    words.forEach(function(o){ var s=''; for(var i=0;i<o.t.length;i++,k++){ var c=o.t.charAt(i); s+=(k<settled||c==='.'||c===',')?c:GLYPHS.charAt((Math.random()*GLYPHS.length)|0);} o.s.textContent=s; });
-    if(p<1){requestAnimationFrame(frame);} else { el.innerHTML=original; el.classList.remove('decoding'); }
-  })(t0);
-}
-
-/* ---- abertura cinematográfica ---- */
-var introEl=document.getElementById('intro'), heroQueue=[];
-var introOn=!reduce&&!!introEl;
-function decodeLater(el){ if(introOn&&el.closest('#inicio')){heroQueue.push(el);return true;} return false; }
-if(introOn){
-  root.classList.add('is-intro'); introEl.hidden=false;
-  decode(document.getElementById('introMark'));
-  var endIntro=function(){ if(!introOn)return; introOn=false; introEl.classList.add('open'); root.classList.remove('is-intro');
-    heroQueue.forEach(function(el,i){setTimeout(function(){decode(el);},150+i*140);});
-    setTimeout(function(){introEl.hidden=true;},1200); };
-  setTimeout(endIntro,1500); introEl.addEventListener('click',endIntro);
-}
-
-/* ---- palavras que acendem com a rolagem ---- */
-var wordBlocks=[];
-if(!reduce){
-  $$('[data-words]').forEach(function(el){
-    var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null), list=[], n;
-    while((n=w.nextNode()))list.push(n);
-    list.forEach(function(t){
-      var f=document.createDocumentFragment();
-      t.nodeValue.split(/(\s+)/).forEach(function(p){
-        if(!p)return;
-        if(/^\s+$/.test(p)){f.appendChild(document.createTextNode(p));}
-        else{var s=document.createElement('span');s.className='w';s.textContent=p;f.appendChild(s);}
-      });
-      t.parentNode.replaceChild(f,t);
-    });
-    wordBlocks.push({el:el,words:$$('.w',el)});
-  });
-}
-
-/* ---- digitação (exemplo e console do Atlas) ---- */
-function typeBox(box){
-  if(reduce)return;
-  if(box._timer)clearTimeout(box._timer);
-  var lines=$$('[data-type]',box), msgs=$$('.msg',box), li=0;
-  box.style.minHeight=box.offsetHeight+'px';
-  lines.forEach(function(l){ if(!l._html){l._html=l.innerHTML;l._text=l.textContent;} l.classList.add('pending'); l.classList.remove('caret'); });
-  msgs.forEach(function(m){m.classList.add('wait');});
-  function next(){
-    if(li>=lines.length){box.style.minHeight='';return;}
-    var l=lines[li], i=0, txt=l._text;
-    l.textContent=''; l.classList.remove('pending'); l.classList.add('caret');
-    (function tick(){
-      i+=Math.max(1,Math.round(txt.length/60));
-      l.textContent=txt.slice(0,i);
-      if(i<txt.length){box._timer=setTimeout(tick,18);}
-      else{
-        l.innerHTML=l._html; l.classList.remove('caret');
-        var m=l.closest('.msg'); if(m)m.classList.remove('wait');
-        li++; box._timer=setTimeout(next,380);
-      }
-    })();
-  }
-  next();
-}
-$$('[data-replay]').forEach(function(b){b.addEventListener('click',function(){typeBox(b.closest('[data-console]'));});});
-
-/* ---- comparativos: alterna e, ao aparecer, mostra o método assistido ---- */
-$$('[data-compare]').forEach(function(g){
-  var btns=$$('[data-side]',g), panes=$$('[data-pane]',g);
-  function set(side){
-    g.querySelector('.switch')&&g.querySelector('.switch').setAttribute('data-active',side);
-    btns.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-side')===side));});
-    panes.forEach(function(p){
-      var on=p.getAttribute('data-pane')===side;
-      if(on&&!p.classList.contains('is-active')){p.classList.remove('is-active');void p.offsetWidth;}
-      p.classList.toggle('is-active',on);
-    });
-  }
-  btns.forEach(function(b){b.addEventListener('click',function(){g._touched=true;set(b.getAttribute('data-side'));});});
-  panes.forEach(function(p){p.addEventListener('click',function(){g._touched=true;set(p.getAttribute('data-pane'));});});
-  g._onIn=function(){ if(reduce)return; setTimeout(function(){ if(!g._touched)set('assisted'); },2400); };
-  set('traditional');
-});
-
-/* ---- entrada dos elementos ---- */
-var pendingReveal=[];
-function reveal(t){
-  if(t._shown)return; t._shown=true; t.classList.add('in');
-  if(t.hasAttribute('data-decode')&&!decodeLater(t))decode(t);
-  if(t.hasAttribute('data-console'))typeBox(t);
-  if(t._onIn)t._onIn();
-  if(io)io.unobserve(t);
-}
-var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){
-  es.forEach(function(e){ if(e.isIntersecting)reveal(e.target); });
-},{rootMargin:'0px 0px -10% 0px',threshold:0.01}):null;
-$$('[data-reveal],[data-decode],.frame,.rule,.stagger,[data-console],[data-compare]').forEach(function(el){
-  if(io){io.observe(el);pendingReveal.push(el);} else el.classList.add('in');
-});
-/* garantia: o que já passou pela tela (rolagem muito rápida ou salto de âncora) também é revelado */
-function revealPassed(){
-  if(!pendingReveal.length)return;
-  var vh=window.innerHeight;
-  pendingReveal=pendingReveal.filter(function(el){
-    if(el._shown)return false;
-    if(el.getBoundingClientRect().top<vh*0.9){reveal(el);return false;}
-    return true;
-  });
-}
-
-/* ---- menu (celular) ---- */
-var menuBtn=document.getElementById('menuBtn'), mnav=document.getElementById('mnav'), hdr=document.getElementById('hdr');
-function setMenu(open){menuBtn.setAttribute('aria-expanded',String(open));mnav.hidden=!open;document.body.style.overflow=open?'hidden':'';}
-menuBtn.addEventListener('click',function(){setMenu(mnav.hidden);});
-$$('a',mnav).forEach(function(a){a.addEventListener('click',function(){setMenu(false);});});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!mnav.hidden){setMenu(false);menuBtn.focus();}});
-
-/* ---- rolagem: progresso, parallax, acender palavras, fluxos, menu ativo ---- */
-var progress=document.getElementById('progress');
-var paras=$$('[data-parallax]'), ghosts=$$('[data-ghost]'), flows=$$('[data-flow]');
-var navLinks=$$('.nav a');
-var spy={inicio:'inicio',profissional:'profissional',desafio:'inicio','antes-depois':'drive',drive:'drive',exemplos:'drive',rotina:'drive',rkos:'rkos','rkos-na-pratica':'rkos',atlas:'atlas','atlas-na-pratica':'atlas'};
-var sections=$$('main > section[id]');
-var lastY=window.scrollY, vel=0, ticking=false;
-function onScroll(){
-  ticking=false;
-  var y=window.scrollY, vh=window.innerHeight, dh=document.documentElement.scrollHeight-vh;
-  vel=y-lastY; lastY=y;
-  progress.style.transform='scaleX('+(dh>0?y/dh:0)+')';
-  revealPassed();
-  hdr.classList.toggle('scrolled',y>40);
-  if(!reduce){
-    var wide=window.innerWidth>900;
-    paras.forEach(function(img){
-      var r=img.parentNode.getBoundingClientRect(); if(r.bottom<-50||r.top>vh+50)return;
-      var off=wide?((r.top+r.height/2)-vh/2)*-0.07:0; img.style.setProperty('--py',off.toFixed(1)+'px');
-    });
-    ghosts.forEach(function(g){var r=g.parentNode.getBoundingClientRect(); if(r.bottom<0||r.top>vh)return; g.style.transform='translate3d(0,'+(r.top*-0.18).toFixed(1)+'px,0)';});
-    wordBlocks.forEach(function(b){
-      var r=b.el.getBoundingClientRect(); if(r.top>vh||r.bottom<-vh)return;
-      var p=clamp((vh*0.98-r.top)/(r.height+vh*0.22),0,1), lit=Math.round(p*b.words.length*1.35);
-      for(var i=0;i<b.words.length;i++)b.words[i].classList.toggle('lit',i<lit);
-    });
-  }
-  flows.forEach(function(f){
-    var r=f.getBoundingClientRect(), p=reduce?1:clamp((vh*0.82-r.top)/(vh*0.5),0,1);
-    f.style.setProperty('--p',p.toFixed(3));
-    $$('.fnode',f).forEach(function(n,i,a){n.classList.toggle('on',p>=(i/(a.length-1))*0.98-0.001);});
-  });
-  var cur=null; sections.forEach(function(s){var r=s.getBoundingClientRect(); if(r.top<=vh*0.35&&r.bottom>vh*0.35)cur=s.id;});
-  var target=cur&&spy[cur]?spy[cur]:null;
-  navLinks.forEach(function(a){ if(a.getAttribute('href')==='#'+target)a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current'); });
-}
-window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll);}},{passive:true});
-window.addEventListener('resize',onScroll,{passive:true});
-onScroll();
-
-/* ---- faixa que acelera com a rolagem ---- */
-var track=document.getElementById('mtrack');
-if(track&&!reduce){
-  var x=0, dir=-1, speed=0.6;
-  (function loop(){
-    if(Math.abs(vel)>1)dir=vel>0?-1:1;
-    speed+=((0.6+Math.min(Math.abs(vel),60)*0.35)-speed)*0.08;
-    vel*=0.9;
-    var half=track.scrollWidth/2;
-    x+=speed*dir; if(x<=-half)x+=half; if(x>0)x-=half;
-    track.style.transform='translate3d('+x.toFixed(1)+'px,0,0)';
-    requestAnimationFrame(loop);
-  })();
-}
-
-
-/* ---- campo da abertura: células espalhadas que se organizam numa grade ---- */
-(function(){
-  var cv=document.getElementById('field'); if(!cv||reduce)return;
-  var ctx=cv.getContext('2d'); if(!ctx)return;
-  var sec=document.getElementById('inicio'), W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,1.5), cells=[], mx=-9999,my=-9999, t0=0, visible=true;
-  function build(){
-    var r=sec.getBoundingClientRect(); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-    var small=W<700, cw=small?26:34, ch=small?16:20, gap=small?6:8, cols=small?9:14, rows=small?14:16;
-    var gx0=small?(W-cols*(cw+gap))/2:W*0.5, gy0=small?H*0.04:H*0.12;
-    cells=[];
-    for(var y=0;y<rows;y++)for(var x=0;x<cols;x++){
-      if(Math.random()<0.18)continue;
-      var tx=gx0+x*(cw+gap), ty=gy0+y*(ch+gap);
-      cells.push({tx:tx,ty:ty,x:Math.random()*W,y:Math.random()*H,r:(Math.random()-.5)*2.4,w:cw,h:ch,d:Math.random()*0.6,hot:0,ox:0,oy:0});
-    }
-    t0=performance.now()+(introOn?1500:0);
-  }
-  function ease(p){return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;}
-  var last=0, frameN=0;
-  function draw(now){
-    requestAnimationFrame(draw); if(!visible||introOn)return;          /* sob a cortina nada é visível */
-    var base=Math.max(0,(now-t0)/2600), settled=base>1.2, active=mx>-1000;
-    if(settled&&!active&&(frameN++&1))return;                           /* em repouso: 30 quadros/s */
-    var dt=last?Math.min(100,now-last):16.7, k=dt/16.7; last=now;
-    ctx.clearRect(0,0,W,H); ctx.lineWidth=1;
-    var calm=[], i,c,p,x,y,rot,dx,dy,dist,push,a;
-    for(i=0;i<cells.length;i++){
-      c=cells[i]; p=ease(clamp((base-c.d*0.5)/0.75,0,1));
-      x=c.x+(c.tx-c.x)*p; y=c.y+(c.ty-c.y)*p; rot=c.r*(1-p); push=0;
-      if(active){dx=x-mx; dy=y-my; dist=Math.sqrt(dx*dx+dy*dy); push=dist<140?(140-dist)/140:0;
-        c.ox+=((dx/(dist||1))*push*26-c.ox)*0.12; c.oy+=((dy/(dist||1))*push*26-c.oy)*0.12;}
-      else if(c.ox||c.oy){c.ox*=0.88; c.oy*=0.88; if(Math.abs(c.ox)<0.05&&Math.abs(c.oy)<0.05)c.ox=c.oy=0;}
-      if(p>=1&&Math.random()<0.0016*k)c.hot=1; c.hot*=Math.pow(0.975,k);
-      if(p>=1&&c.hot<0.02&&push<0.01&&!c.ox&&!c.oy){calm.push(c);continue;}   /* células paradas: desenho em lote */
-      a=0.10+0.10*p+c.hot*0.55+push*0.3;
-      ctx.save(); ctx.translate(x+c.ox+c.w/2,y+c.oy+c.h/2); ctx.rotate(rot);
-      ctx.strokeStyle='rgba(255,140,60,'+a.toFixed(3)+')'; ctx.strokeRect(-c.w/2,-c.h/2,c.w,c.h);
-      if(c.hot>0.05||push>0.2){ctx.fillStyle='rgba(255,122,26,'+(c.hot*0.35+push*0.18).toFixed(3)+')';ctx.fillRect(-c.w/2,-c.h/2,c.w,c.h);}
-      ctx.restore();
-    }
-    if(calm.length){ctx.strokeStyle='rgba(255,140,60,0.2)'; ctx.beginPath(); for(i=0;i<calm.length;i++){c=calm[i]; ctx.rect(c.tx,c.ty,c.w,c.h);} ctx.stroke();}
-  }
-  build(); window.addEventListener('resize',build,{passive:true});
-  sec.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;},{passive:true});
-  sec.addEventListener('pointerleave',function(){mx=my=-9999;});
-  if('IntersectionObserver' in window)new IntersectionObserver(function(es){visible=es[0].isIntersecting;}).observe(sec);
-  requestAnimationFrame(draw);
-})();
-
-/* ---- interações de ponteiro (desktop) ---- */
-if(fine&&!reduce){
-  var glow=document.getElementById('glow'), cursor=document.getElementById('cursor');
-  var mx=innerWidth/2,my=innerHeight/3,gx=mx,gy=my,cx=mx,cy=my;
-  window.addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;cursor.classList.add('on');},{passive:true});
-  document.addEventListener('pointerleave',function(){cursor.classList.remove('on');});
-  (function follow(){
-    gx+=(mx-gx)*0.06; gy+=(my-gy)*0.06; cx+=(mx-cx)*0.22; cy+=(my-cy)*0.22;
-    glow.style.transform='translate3d('+gx.toFixed(1)+'px,'+gy.toFixed(1)+'px,0)';
-    cursor.style.transform='translate3d('+cx.toFixed(1)+'px,'+cy.toFixed(1)+'px,0)';
-    requestAnimationFrame(follow);
-  })();
-  $$('a,button,[data-pane],[data-tilt]').forEach(function(el){
-    el.addEventListener('pointerenter',function(){cursor.classList.add('big');});
-    el.addEventListener('pointerleave',function(){cursor.classList.remove('big');});
-  });
-  $$('[data-tilt]').forEach(function(el){
-    el.addEventListener('pointermove',function(e){
-      var r=el.getBoundingClientRect(), px=(e.clientX-r.left)/r.width-.5, py=(e.clientY-r.top)/r.height-.5;
-      el.style.setProperty('--rx',(-py*7).toFixed(2)+'deg'); el.style.setProperty('--ry',(px*9).toFixed(2)+'deg');
-      el.style.setProperty('--gx',((px+.5)*100).toFixed(1)+'%'); el.style.setProperty('--gy',((py+.5)*100).toFixed(1)+'%');
-    });
-    el.addEventListener('pointerleave',function(){el.style.setProperty('--rx','0deg');el.style.setProperty('--ry','0deg');});
-  });
-  $$('.spot').forEach(function(el){
-    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect();el.style.setProperty('--mx',(e.clientX-r.left)+'px');el.style.setProperty('--my',(e.clientY-r.top)+'px');});
-  });
-  $$('.magnetic').forEach(function(el){
-    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect();el.style.transform='translate('+((e.clientX-r.left-r.width/2)*0.25).toFixed(1)+'px,'+((e.clientY-r.top-r.height/2)*0.35).toFixed(1)+'px)';});
-    el.addEventListener('pointerleave',function(){el.style.transform='';});
-  });
-}
-})();
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="js/experience.js" defer></script>
-
 </body>
 </html>

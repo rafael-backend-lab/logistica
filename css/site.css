@@ -555,3 +555,11 @@ main,.footer{position:relative;z-index:1}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .mnav a{opacity:1;transform:none}
 }
+
+/* Ritmo vertical no computador: o recuo inferior das cenas somado ao superior dos capítulos
+   deixava até meia tela vazia entre as seções. */
+@media (min-width:901px){
+  .scene{padding-block:clamp(90px,8vw,130px)}
+  .chapter{padding-block:clamp(84px,8vw,130px)}
+  .finale{padding-top:clamp(100px,10vw,150px)}
+}

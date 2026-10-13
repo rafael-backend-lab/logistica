@@ -41,3 +41,12 @@
   .rl .flash,.rl .done,.rl .ripple{display:none}
   .motion .hero-robot-img .rl-box{animation:none}
 }
+
+/* Telas de toque: enquanto a página rola, as animações decorativas pausam (retomam ao parar)
+   e a textura de granulado, que mistura cores sobre a página inteira, fica desligada. */
+@media (hover:none){
+  .rl-scrolling .rl *,.rl-scrolling .hero-robot-img img,.rl-scrolling .hero-robot-img .rl-box,
+  .rl-scrolling .ring,.rl-scrolling .kg-orbit,.rl-scrolling .rk-orbit,
+  .rl-scrolling .status .led::after,.rl-scrolling .cue-line::after{animation-play-state:paused!important}
+  .grain{display:none}
+}

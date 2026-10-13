@@ -179,14 +179,14 @@
 .at-ctrl{display:grid;gap:14px}
 .at-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
 .at-btns .btn{width:100%;justify-content:space-between}
-.at-stages{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
-.at-stages li{display:grid;gap:4px;min-width:0;padding:8px 4px;border-top:2px solid var(--line-2);font:500 9.5px/1.25 var(--f-mono);letter-spacing:.02em;overflow-wrap:anywhere;color:var(--muted);transition:color .4s,border-color .4s}
+.at-stages{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(5,auto);gap:4px} /* colunas pela largura da palavra: "IDENTIFICAÇÃO" não quebra no meio */
+.at-stages li{display:grid;gap:4px;min-width:0;padding:8px 4px;border-top:2px solid var(--line-2);font:500 9.5px/1.25 var(--f-mono);letter-spacing:.02em;overflow-wrap:normal;word-break:normal;hyphens:none;color:var(--muted);transition:color .4s,border-color .4s}
 .at-stages li span{font-size:11px}
 .at-stages li.done{border-color:rgba(255,122,26,.55);color:#cfc4b5}
 .at-stages li.on{border-color:var(--ember);color:var(--paper)}
 .at-sheet{position:relative;overflow:hidden;padding:18px 18px 20px;border-radius:14px;background:#efe6d8;color:#20170f;box-shadow:0 40px 80px rgba(0,0,0,.45);min-height:420px}
 .at-sheet-h{display:flex;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid rgba(32,23,15,.18);font:600 11.5px/1.4 var(--f-mono);letter-spacing:.06em;color:#4a3a2c}
-.at-sheet-h b{letter-spacing:.14em}
+.at-sheet-h b{letter-spacing:.14em;color:#9a4510} /* a regra geral de <b> usa creme claro, invisível sobre a folha creme */
 .at-sheet dl{margin:6px 0 0}
 .af{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:9px 8px;border-bottom:1px dashed rgba(32,23,15,.16);border-radius:6px;transition:background-color .45s,box-shadow .45s}
 .af dt{font:600 11px/1.5 var(--f-mono);letter-spacing:.08em;color:#6b5848}
@@ -306,7 +306,8 @@
   .lt-row [data-l]::before{content:attr(data-l);display:block;font:500 9.5px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .lr-grid{grid-template-columns:minmax(0,1fr)}
   .rk-docs{grid-template-columns:minmax(0,1fr)}
-  .at-stages li{font-size:8.5px;letter-spacing:.02em}
+  .at-stages{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:6px} /* 3 + 2: cada etapa cabe sem cortar a palavra */
+  .at-stages li{font-size:9.5px;letter-spacing:.02em}
   .af{grid-template-columns:minmax(0,1fr);gap:2px}
   .at-sheet{min-height:0}
   .pz-counts{grid-template-columns:repeat(2,minmax(0,1fr))}

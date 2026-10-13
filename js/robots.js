@@ -355,14 +355,24 @@ window.addEventListener('load',layoutAll);
 
 if(reduce)return; /* luz estática; sem varreduras, pulsos ou reações */
 
-var running=false, last=0;
+/* Telas de toque: luz a ~30 quadros por segundo e pausa enquanto a pessoa rola a página,
+   para a rolagem ficar com o processador livre. No computador nada muda. */
+var touch=!fine, scrolling=false, scrollEnd=0, html=document.documentElement;
+if(touch)window.addEventListener('scroll',function(){
+  if(!scrolling){scrolling=true;html.classList.add('rl-scrolling');}
+  clearTimeout(scrollEnd);
+  scrollEnd=setTimeout(function(){scrolling=false;html.classList.remove('rl-scrolling');wake();},160);
+},{passive:true});
+var running=false, last=0, acc=0;
 function frame(now){
   var dt=Math.min(.05,(now-last)/1000||0); last=now;
+  if(scrolling){running=false;return;}
   var any=false;
+  if(touch){acc+=dt; if(acc<.031){requestAnimationFrame(frame);return;} dt=Math.min(.066,acc); acc=0;}
   robots.forEach(function(r){if(r.vis){any=true;r.update(dt,now);}});
   if(any&&!document.hidden){requestAnimationFrame(frame);}else running=false;
 }
-function wake(){if(!running&&!document.hidden){running=true;last=performance.now();requestAnimationFrame(frame);}}
+function wake(){if(!running&&!scrolling&&!document.hidden){running=true;last=performance.now();acc=0;requestAnimationFrame(frame);}}
 
 if('IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){

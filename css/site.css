@@ -490,7 +490,7 @@ main,.footer{position:relative;z-index:1}
   .sig-robot{order:-1;width:min(64vw,300px);margin:0 0 -10% auto}
   .nav{display:none}
   .menu-btn{display:inline-flex}
-  .hero{justify-content:flex-end;padding:0 0 110px}
+  .hero{justify-content:flex-end;padding:calc(env(safe-area-inset-top,0px) + 96px) 0 110px} /* recuo do cabeçalho fixo: em telas baixas o título não fica por baixo dele */
   .hero-copy{max-width:none}
   .hero-robot{top:44px;bottom:auto;height:66svh;width:100%;
     -webkit-mask-image:linear-gradient(180deg,#000 46%,transparent 96%);mask-image:linear-gradient(180deg,#000 46%,transparent 96%);-webkit-mask-composite:source-over;mask-composite:add}

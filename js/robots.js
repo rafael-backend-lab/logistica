@@ -187,26 +187,26 @@ Robot.prototype.buildArm=function(){
   var self=this, r=this.r, p=this.c.arm.map(this.P), d=smooth(p);
   this.armGlow=el('path',{d:d,fill:'none',stroke:'#ff7a1a','stroke-width':(r*2.6).toFixed(1),'stroke-linecap':'round',opacity:0},this.fx);
   this.armCore=el('path',{d:d,fill:'none',stroke:'#ffe0bd','stroke-width':(r*.7).toFixed(1),'stroke-linecap':'round',opacity:0},this.fx);
-  var L=this.armL=this.armCore.getTotalLength()||1;
-  this.lights.forEach(function(l){
-    var best=0,bd=1e12;for(var i=0;i<=80;i++){var q=self.armCore.getPointAtLength(L*i/80),dd=(q.x-l.p[0])*(q.x-l.p[0])+(q.y-l.p[1])*(q.y-l.p[1]);if(dd<bd){bd=dd;best=i/80;}}
-    l.at=bd<Math.pow(r*9,2)?best:-1;
-  });
+  this.armL=0; /* comprimento e juntas calculados na primeira vez que o robô aparece (evita ~85 ms no carregamento) */
   var tip=p[p.length-1];
   this.tip=el('circle',{cx:tip[0],cy:tip[1],r:r*5,fill:'url(#'+this.id+'g)',opacity:0},this.fx);
   this.pulse=null; this.lastPulse=-1e9;
 };
 Robot.prototype.firePulse=function(now){if(this.pulse||now-this.lastPulse<2600)return;this.pulse={t:0};this.lastPulse=now;};
 
-Robot.prototype.layout=function(){
-  if(!this.cover)return;
-  var img=this.img, bw=img.clientWidth, bh=img.clientHeight; if(!bw||!bh)return;
-  var pos=getComputedStyle(img).objectPosition.split(' '), px=parseFloat(pos[0])/100, py=parseFloat(pos[1])/100;
-  if(isNaN(px))px=.5; if(isNaN(py))py=.5;
-  var s=Math.max(bw/this.W,bh/this.H), w=this.W*s, h=this.H*s, st=this.svg.style;
-  st.left=(img.offsetLeft+(bw-w)*px).toFixed(1)+'px'; st.top=(img.offsetTop+(bh-h)*py).toFixed(1)+'px';
-  st.width=w.toFixed(1)+'px'; st.height=h.toFixed(1)+'px';
+/* layout em duas fases: todas as leituras primeiro, depois as escritas (sem recálculos forçados entre robôs) */
+Robot.prototype.measure=function(){
+  if(!this.cover)return null;
+  var img=this.img, bw=img.clientWidth, bh=img.clientHeight; if(!bw||!bh)return null;
+  if(this.px===undefined){var pos=getComputedStyle(img).objectPosition.split(' ');this.px=parseFloat(pos[0])/100;this.py=parseFloat(pos[1])/100;if(isNaN(this.px))this.px=.5;if(isNaN(this.py))this.py=.5;}
+  var s=Math.max(bw/this.W,bh/this.H), w=this.W*s, h=this.H*s;
+  return {l:img.offsetLeft+(bw-w)*this.px,t:img.offsetTop+(bh-h)*this.py,w:w,h:h};
 };
+Robot.prototype.apply=function(m){
+  if(!m)return; var st=this.svg.style;
+  st.left=m.l.toFixed(1)+'px'; st.top=m.t.toFixed(1)+'px'; st.width=m.w.toFixed(1)+'px'; st.height=m.h.toFixed(1)+'px';
+};
+Robot.prototype.layout=function(){this.apply(this.measure());};
 
 Robot.prototype.signal=function(type,data){
   var now=performance.now();
@@ -318,8 +318,15 @@ Robot.prototype.runAtlas=function(dt,busy){
 };
 
 /* convite: pulso percorre o braço até a mão, juntas acendem na passagem */
+Robot.prototype.measureArm=function(){
+  var self=this, r=this.r, L=this.armL=this.armCore.getTotalLength()||1;
+  this.lights.forEach(function(l){
+    var best=0,bd=1e12;for(var i=0;i<=80;i++){var q=self.armCore.getPointAtLength(L*i/80),dd=(q.x-l.p[0])*(q.x-l.p[0])+(q.y-l.p[1])*(q.y-l.p[1]);if(dd<bd){bd=dd;best=i/80;}}
+    l.at=bd<Math.pow(r*9,2)?best:-1;
+  });
+};
 Robot.prototype.runArm=function(dt,now){
-  var self=this;
+  var self=this; if(!this.armL)this.measureArm();
   if(fine&&this.near>.55)this.firePulse(now);
   if(!this.autoAt)this.autoAt=now+1400;
   if(now>this.autoAt){this.firePulse(now);this.autoAt=now+(fine?9000:7000);}
@@ -347,11 +354,10 @@ ROBOTS.forEach(function(c){
 });
 if(!robots.length)return;
 
-function layoutAll(){robots.forEach(function(r){r.layout();});}
-layoutAll();
+function layoutAll(){var m=robots.map(function(r){return r.measure();});robots.forEach(function(r,i){r.apply(m[i]);});}
+/* O ResizeObserver avisa logo após o layout do navegador (inclusive na primeira vez), então medir ali não força recálculo. */
 if('ResizeObserver' in window){var ro=new ResizeObserver(layoutAll);robots.forEach(function(r){ro.observe(r.root);});}
-else window.addEventListener('resize',layoutAll,{passive:true});
-window.addEventListener('load',layoutAll);
+else {layoutAll();window.addEventListener('resize',layoutAll,{passive:true});window.addEventListener('load',layoutAll);}
 
 if(reduce)return; /* luz estática; sem varreduras, pulsos ou reações */
 
@@ -376,7 +382,7 @@ function wake(){if(!running&&!scrolling&&!document.hidden){running=true;last=per
 
 if('IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){
-    es.forEach(function(e){robots.forEach(function(r){if(r.root===e.target){r.vis=e.isIntersecting;r.svg.classList.toggle('rl-on',e.isIntersecting);if(e.isIntersecting&&r.cover)r.layout();}});});
+    es.forEach(function(e){robots.forEach(function(r){if(r.root===e.target){r.vis=e.isIntersecting;r.svg.classList.toggle('rl-on',e.isIntersecting);}});});
     wake();
   },{rootMargin:'80px 0px'});
   robots.forEach(function(r){io.observe(r.root);});

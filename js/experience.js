@@ -6,9 +6,20 @@ window.__xp=1;
 var root=document.documentElement;
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var fine=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-var hasGsap=!!(window.gsap&&window.ScrollTrigger);
 if(reduce)root.classList.remove('motion');
-if(hasGsap){gsap.registerPlugin(ScrollTrigger);ScrollTrigger.config({ignoreMobileResize:true});}
+/* GSAP só é baixado em telas largas (profundidade + fixação do simulador do Atlas).
+   No celular a profundidade usa o código leve mais abaixo, sem biblioteca externa. */
+var wide=window.matchMedia('(min-width: 1024px)').matches, hasGsap=false, gsapReady=[];
+function onGsap(fn){ if(hasGsap)fn(); else gsapReady.push(fn); }
+function loadGsap(){
+  var srcs=[['https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js','sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=='],
+            ['https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js','sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==']];
+  (function next(i){
+    if(i===srcs.length){ if(!(window.gsap&&window.ScrollTrigger))return; gsap.registerPlugin(ScrollTrigger); ScrollTrigger.config({ignoreMobileResize:true}); hasGsap=true; gsapReady.splice(0).forEach(function(fn){fn();}); if(typeof refreshAll==='function')refreshAll(); return; }
+    var sc=document.createElement('script'); sc.src=srcs[i][0]; sc.integrity=srcs[i][1]; sc.crossOrigin='anonymous'; sc.referrerPolicy='no-referrer';
+    sc.onload=function(){next(i+1);}; document.head.appendChild(sc);
+  })(0);
+}
 
 function $$(s,c){return [].slice.call((c||document).querySelectorAll(s));}
 function clamp(v,a,b){return v<a?a:v>b?b:v;}
@@ -22,7 +33,7 @@ function onView(el,cb,th,margin){
 /* ---------- títulos: palavras com máscara ---------- */
 $$('[data-split]').forEach(function(el){
   var w=0, isH=/^H[1-6]$/.test(el.tagName);
-  if(isH)el.setAttribute('aria-label',el.textContent.replace(/\s+/g,' ').trim());
+  if(isH){ var cl=el.cloneNode(true); [].slice.call(cl.querySelectorAll('br')).forEach(function(br){br.parentNode.replaceChild(document.createTextNode(' '),br);}); el.setAttribute('aria-label',cl.textContent.replace(/\s+/g,' ').trim()); } /* <br> vira espaço: "LOGÍSTICA INTELIGENTE." */
   (function walk(node){
     [].slice.call(node.childNodes).forEach(function(n){
       if(n.nodeType===3){
@@ -126,12 +137,14 @@ $$('.trail-svg path').forEach(function(p){p.setAttribute('pathLength','1');});
 var lastScrolled=null, lastIdx=-1, lastTp=-1, pillAt=null, navOn=true, lastOut=null, heroH=1;
 function measure(){
   navOn=!!(nav&&nav.offsetWidth); pillAt=null; heroH=hero?hero.offsetHeight||1:1;
+  if(depth)measureDepth();
   starts={};
   secs.forEach(function(s){ var c=chapOf[s.id], top=s.getBoundingClientRect().top+window.scrollY; if(c&&(starts[c]===undefined||top<starts[c]))starts[c]=top; });
 }
 function spy(){
   var y=window.scrollY, vh=window.innerHeight, dh=document.documentElement.scrollHeight-vh, probe=y+vh*.4, idx=0;
   var trailTop=trail?trail.getBoundingClientRect().top:0; /* leituras antes de qualquer escrita */
+  if(depth&&depth.length)runDepth(y,vh);
   for(var i=0;i<order.length;i++){ if(starts[order[i]]!==undefined&&probe>=starts[order[i]])idx=i; }
   var chap=order[idx];
   if(progress)progress.style.setProperty('--pg',(dh>0?y/dh:0).toFixed(4));
@@ -153,12 +166,29 @@ function spy(){
     if(tp!==lastTp){ lastTp=tp; trail.style.setProperty('--tp',tp.toFixed(3)); trailItems.forEach(function(li,i){li.classList.toggle('on',tp>=i/(trailItems.length-1)-.001);}); }
   }
 }
+/* ---------- profundidade na rolagem ---------- */
+var depth=[]; /* versão leve (celular): {el, trig, from, to, prop} */
+if(!reduce&&!wide){
+  $$('.scene .frame-clip').forEach(function(c){
+    depth.push({el:c,trig:c.parentNode,a:4,b:-4,k:'y'});
+    $$('img,.rl-box',c).forEach(function(m){depth.push({el:m,trig:c.parentNode,a:1.16,b:1.04,k:'s'});});
+  });
+  $$('.scene .ghost').forEach(function(g){depth.push({el:g,trig:g.parentNode,a:12,b:-12,k:'y'});});
+  $$('.feature-media img').forEach(function(m){depth.push({el:m,trig:m.parentNode,a:-4,b:4,k:'y'});});
+}
+function measureDepth(){ depth.forEach(function(d){ var r=d.trig.getBoundingClientRect(); d.top=r.top+window.scrollY; d.h=r.height; d.last=null; }); }
+function runDepth(y,vh){
+  for(var i=0;i<depth.length;i++){ var d=depth[i];
+    if(y+vh<d.top-200||y>d.top+d.h+200)continue; /* fora da tela: não toca */
+    var p=clamp((y+vh-d.top)/(vh+d.h),0,1), v=d.a+(d.b-d.a)*p, t=d.k==='y'?'translate3d(0,'+v.toFixed(2)+'%,0)':'scale('+v.toFixed(4)+')';
+    if(t!==d.last){d.last=t;d.el.style.transform=t;}
+  }
+}
 measure(); spy();
 var spyTick=false;
 window.addEventListener('scroll',function(){ if(!spyTick){spyTick=true;requestAnimationFrame(function(){spyTick=false;spy();});} },{passive:true});
 
-/* ---------- profundidade na rolagem (GSAP) ---------- */
-if(hasGsap&&!reduce){
+if(wide&&!reduce)onGsap(function(){
   $$('.scene .frame-clip').forEach(function(c){
     var img=c.querySelector('img');
     gsap.fromTo(c,{yPercent:4},{yPercent:-4,ease:'none',scrollTrigger:{trigger:c,start:'top bottom',end:'bottom top',scrub:true}});
@@ -170,7 +200,7 @@ if(hasGsap&&!reduce){
   $$('.feature-media img').forEach(function(img){
     gsap.fromTo(img,{yPercent:-4},{yPercent:4,ease:'none',scrollTrigger:{trigger:img.parentNode,start:'top bottom',end:'bottom top',scrub:true}});
   });
-}
+});
 
 /* ---------- transformação manual → assistido ---------- */
 $$('[data-xf]').forEach(function(xf){
@@ -371,19 +401,20 @@ $$('[data-pipeline]').forEach(function(pl){
   set(0);
   if(reduce)pl.classList.add('in');
   else onView(pl,function(v,io){ if(v){pl.classList.add('in');io.disconnect();} },.2);
-  var canPin=hasGsap&&!reduce&&window.matchMedia('(min-width: 1024px) and (min-height: 760px)').matches;
-  if(canPin&&pl.offsetHeight<window.innerHeight-(Number(getComputedStyle(root).getPropertyValue('--hdr').replace('px',''))||72)-60){
+  var canPin=wide&&!reduce&&window.matchMedia('(min-height: 760px)').matches;
+  if(canPin)onGsap(function(){ if(pl.offsetHeight<window.innerHeight-(Number(getComputedStyle(root).getPropertyValue('--hdr').replace('px',''))||72)-60){
     st=ScrollTrigger.create({trigger:pl,start:'center 54%',end:'+=2600',pin:true,anticipatePin:1,
       snap:{snapTo:[.1,.3,.5,.7,.9],duration:{min:.25,max:.6},delay:.12,ease:'power2.inOut'},
       onUpdate:function(s){set(Math.min(4,Math.floor(s.progress*5)));}});
-  }
+  } });
 });
 
 /* ---------- recálculo quando a altura muda (fontes, imagens) ---------- */
 var refreshAll=debounce(function(){ if(hasGsap)ScrollTrigger.refresh(); measure(); spy(); placeHud(); $$('[data-kgraph]').forEach(function(k){if(k._layout)k._layout();}); },200);
 var lastW=window.innerWidth;
 window.addEventListener('resize',function(){ var w=window.innerWidth; if(!fine&&w===lastW)return; lastW=w; refreshAll(); },{passive:true});
-window.addEventListener('load',refreshAll);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(refreshAll);
+/* uma atualização só depois que imagens e fontes chegam (antes eram duas ou três seguidas) */
+window.addEventListener('load',function(){ (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(refreshAll); });
 if('ResizeObserver' in window){ var lastH=0; new ResizeObserver(function(){ var h=document.body.scrollHeight; if(Math.abs(h-lastH)>2){lastH=h;refreshAll();} }).observe(document.body); }
+if(wide&&!reduce)loadGsap();
 })();

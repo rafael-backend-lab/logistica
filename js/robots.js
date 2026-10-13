@@ -64,8 +64,8 @@ function Robot(c,img){
   var defs=el('defs',null,svg);
   radial(defs,id+'g',[[0,'#ffd6a8',.95],[.18,'#ff9640',.55],[.55,'#ff7a1a',.14],[1,'#ff7a1a',0]]);
   radial(defs,id+'c',[[0,'#fff3e0',1],[.35,'#ffc07a',.9],[1,'#ff7a1a',0]]);
-  this.beamG=linear(defs,id+'b',[[0,'#ffb067',.34],[1,'#ff7a1a',.03]]);
-  this.bandG=linear(defs,id+'s',[[0,'#ff7a1a',0],[1,'#ffb067',.26]]);
+  this.beamG=linear(defs,id+'b',[[0,'#ffb067',.5],[1,'#ff7a1a',.06]]);
+  this.bandG=linear(defs,id+'s',[[0,'#ff7a1a',0],[1,'#ffb067',.4]]);
 
   if(c.fit==='cover'){
     this.root=img.parentElement;
@@ -241,7 +241,7 @@ Robot.prototype.update=function(dt,now){
   this.near+=(target-this.near)*k;
   this.gx=(this.gx||0)+(gx-(this.gx||0))*k; this.gy=(this.gy||0)+(gy-(this.gy||0))*k;
   this.pupil.setAttribute('transform','translate('+this.gx.toFixed(2)+','+this.gy.toFixed(2)+')');
-  var lvl=.66+this.near*.34+(busy?.22:0);
+  var lvl=.8+this.near*.2+(busy?.2:0);
   this.eye.setAttribute('opacity',Math.min(1,lvl).toFixed(3));
   this.eyeScale.setAttribute('transform','scale('+(1+this.near*.32+(busy?.12:0)).toFixed(3)+')');
 
@@ -259,7 +259,7 @@ Robot.prototype.runPanel=function(pn,dt,busy){
   else if(s.time>=dur){s.phase='rest';s.time=0;}
   var v=s.phase==='scan'?ease(s.time/dur)*1.04:1.04;
   var o=s.phase==='scan'?Math.min(1,s.time*4,(dur-s.time)*5+.15):Math.max(0,.15-s.time*.6);
-  this.scanG.setAttribute('opacity',(clamp(o,0,1)*(busy?1:.82)).toFixed(3));
+  this.scanG.setAttribute('opacity',(clamp(o,0,1)*(busy?1:.95)).toFixed(3));
   if(s.phase==='scan')this.scanPanel(pn,v);
   this.decayPanel(pn,dt,busy?.35:0);
 };

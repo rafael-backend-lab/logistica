@@ -570,3 +570,10 @@ main,.footer{position:relative;z-index:1}
   .motion .hero-robot-img img{animation-name:emerge-m,float}
   @keyframes emerge-m{from{opacity:.01;scale:1.08}to{opacity:1;scale:1}}
 }
+
+/* Abertura: as três soluções apresentadas, logo abaixo do texto principal */
+.hero-offer{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:5px;font:500 13.5px/1.4 var(--f-body,inherit);color:#d9cdbd}
+.hero-offer li{position:relative;padding-left:14px}
+.hero-offer li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--ember)}
+.hero-offer b{font-weight:600;color:var(--ember-hot)}
+@media (max-width:900px){.hero-offer{flex-direction:column;gap:6px;font-size:14px;margin-top:14px}}
